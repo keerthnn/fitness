@@ -1,103 +1,443 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import React, { useState } from "react";
+import {
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  Typography,
+  Box,
+  Chip,
+  LinearProgress,
+  Avatar,
+  IconButton,
+  Menu,
+  MenuItem,
+  Divider,
+  Paper,
+  ListItemIcon,
+} from "@mui/material";
+import {
+  FitnessCenter,
+  CalendarToday,
+  TrendingUp,
+  Person,
+  Settings,
+  ExitToApp,
+  Today,
+  Assessment,
+  Schedule,
+  Add,
+} from "@mui/icons-material";
+import { useRouter } from "next/navigation"; // Note: App Router uses 'next/navigation'
+
+// Mock data - replace with actual API calls
+const mockUser = {
+  id: "1",
+  email: "user@example.com",
+  name: "John Doe",
+  avatar: "/api/placeholder/40/40",
+};
+
+const mockStats = {
+  totalWorkouts: 24,
+  thisWeekWorkouts: 3,
+  currentStreak: 5,
+  targetWeekly: 5,
+};
+
+const mockRecentWorkouts = [
+  {
+    id: "1",
+    date: "2024-08-04",
+    exercises: [
+      { name: "Bench Press", sets: 4, reps: 8, weight: 80 },
+      { name: "Squats", sets: 4, reps: 10, weight: 100 },
+    ],
+    notes: "Great session, felt strong",
+  },
+  {
+    id: "2",
+    date: "2024-08-02",
+    exercises: [
+      { name: "Deadlift", sets: 3, reps: 5, weight: 140 },
+      { name: "Pull-ups", sets: 3, reps: 12, weight: 0 },
+    ],
+    notes: "New PR on deadlift!",
+  },
+];
+
+const mockGoals = [
+  { id: "1", title: "Hit gym 5x/week", progress: 60, target: 5, current: 3 },
+  {
+    id: "2",
+    title: "Reach 15% body fat",
+    progress: 75,
+    target: 15,
+    current: 18,
+  },
+  { id: "3", title: "Bench 100kg", progress: 80, target: 100, current: 80 },
+];
+
+export default function HomePage() {
+  const router = useRouter();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleProfileMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const navigateToProfile = () => {
+    router.push("/profile");
+    handleProfileMenuClose();
+  };
+
+  const navigateToWorkout = () => {
+    router.push("/workout/new");
+  };
+
+  const navigateToProgress = () => {
+    router.push("/progress");
+  };
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <Box sx={{ minHeight: "100vh", bgcolor: "#f8fafc", p: { xs: 2, md: 3 } }}>
+      {/* Header */}
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 4,
+          maxWidth: "1200px",
+          mx: "auto",
+        }}
+      >
+        <Typography variant="h4" fontWeight="bold" color="primary">
+          🏋️ Fitness Tracker
+        </Typography>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          <Chip
+            icon={<Schedule />}
+            label={`${mockStats.thisWeekWorkouts}/${mockStats.targetWeekly} this week`}
+            color="primary"
+            variant="outlined"
+          />
+          <IconButton onClick={handleProfileMenuOpen}>
+            <Avatar sx={{ width: 40, height: 40 }}>
+              {mockUser.name.charAt(0)}
+            </Avatar>
+          </IconButton>
+        </Box>
+
+        <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleProfileMenuClose}
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          transformOrigin={{ vertical: "top", horizontal: "right" }}
+        >
+          <MenuItem onClick={navigateToProfile}>
+            <ListItemIcon>
+              <Person fontSize="small" />
+            </ListItemIcon>
+            Profile
+          </MenuItem>
+          <MenuItem onClick={handleProfileMenuClose}>
+            <ListItemIcon>
+              <Settings fontSize="small" />
+            </ListItemIcon>
+            Settings
+          </MenuItem>
+          <Divider />
+          <MenuItem onClick={handleProfileMenuClose}>
+            <ListItemIcon>
+              <ExitToApp fontSize="small" />
+            </ListItemIcon>
+            Logout
+          </MenuItem>
+        </Menu>
+      </Box>
+
+      <Box sx={{ maxWidth: "1200px", mx: "auto" }}>
+        {/* Quick Stats */}
+        <Box
+          sx={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 3,
+            mb: 4,
+          }}
+        >
+          <Box
+            sx={{
+              flex: {
+                xs: "1 1 100%",
+                sm: "1 1 48%",
+                md: "1 1 23%",
+              },
+            }}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <Card>
+              <CardContent sx={{ textAlign: "center" }}>
+                <FitnessCenter color="primary" sx={{ fontSize: 40, mb: 1 }} />
+                <Typography variant="h4" fontWeight="bold">
+                  {mockStats.totalWorkouts}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Total Workouts
+                </Typography>
+              </CardContent>
+            </Card>
+          </Box>
+
+          <Box
+            sx={{
+              flex: {
+                xs: "1 1 100%",
+                sm: "1 1 calc(50% - 12px)",
+                md: "1 1 calc(25% - 12px)", // ~3 columns on medium screens
+              },
+            }}
           >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+            <Card>
+              <CardContent sx={{ textAlign: "center" }}>
+                <CalendarToday color="secondary" sx={{ fontSize: 40, mb: 1 }} />
+                <Typography variant="h4" fontWeight="bold">
+                  {mockStats.currentStreak}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Day Streak
+                </Typography>
+              </CardContent>
+            </Card>
+          </Box>
+
+          <Box
+            sx={{
+              flex: {
+                xs: "1 1 100%",
+                sm: "1 1 calc(50% - 12px)",
+                md: "1 1 calc(25% - 12px)", // ~3 columns on medium screens
+              },
+            }}
+          >
+            <Card>
+              <CardContent sx={{ textAlign: "center" }}>
+                <Today color="success" sx={{ fontSize: 40, mb: 1 }} />
+                <Typography variant="h4" fontWeight="bold">
+                  {mockStats.thisWeekWorkouts}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  This Week
+                </Typography>
+              </CardContent>
+            </Card>
+          </Box>
+
+          <Box
+            sx={{
+              flex: {
+                xs: "1 1 100%",
+                sm: "1 1 calc(50% - 12px)",
+                md: "1 1 calc(25% - 12px)", // ~3 columns on medium screens
+              },
+            }}
+          >
+            <Card>
+              <CardContent sx={{ textAlign: "center" }}>
+                <TrendingUp color="warning" sx={{ fontSize: 40, mb: 1 }} />
+                <Typography variant="h4" fontWeight="bold">
+                  {Math.round(
+                    (mockStats.thisWeekWorkouts / mockStats.targetWeekly) * 100
+                  )}
+                  %
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Weekly Goal
+                </Typography>
+              </CardContent>
+            </Card>
+          </Box>
+        </Box>
+
+        <Box
+          sx={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 3, // replaces `spacing={3}`
+          }}
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+          <Box
+            sx={{
+              flex: {
+                xs: "1 1 100%", // full width on small screens
+                md: "1 1 66.66%", // 8/12 columns on medium and up
+              },
+            }}
+          >
+            <Card sx={{ mb: 3 }}>
+              <CardHeader
+                title="Quick Actions"
+                titleTypographyProps={{ variant: "h6", fontWeight: "bold" }}
+              />
+              <CardContent>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: 2, // replaces `spacing={3}`
+                  }}
+                >
+                  <Box
+                    sx={{
+                      flex: {
+                        xs: "1 1 100%", // Full width on small screens
+                        sm: "1 1 50%", // Half width on medium screens and up
+                      },
+                    }}
+                  >
+                    <Button
+                      variant="contained"
+                      size="large"
+                      fullWidth
+                      startIcon={<Add />}
+                      onClick={navigateToWorkout}
+                      sx={{ py: 2 }}
+                    >
+                      Log New Workout
+                    </Button>
+                  </Box>
+                  <Box
+                    sx={{
+                      flex: {
+                        xs: "1 1 100%", // Full width on small screens
+                        sm: "1 1 50%", // Half width on medium screens and up
+                      },
+                    }}
+                  >
+                    <Button
+                      variant="outlined"
+                      size="large"
+                      fullWidth
+                      startIcon={<Assessment />}
+                      onClick={navigateToProgress}
+                      sx={{ py: 2 }}
+                    >
+                      View Progress
+                    </Button>
+                  </Box>
+                </Box>
+              </CardContent>
+            </Card>
+
+            {/* Recent Workouts */}
+            <Card>
+              <CardHeader
+                title="Recent Workouts"
+                titleTypographyProps={{ variant: "h6", fontWeight: "bold" }}
+              />
+              <CardContent>
+                {mockRecentWorkouts.map((workout) => (
+                  <Paper
+                    key={workout.id}
+                    elevation={1}
+                    sx={{ p: 2, mb: 2, "&:last-child": { mb: 0 } }}
+                  >
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        mb: 1,
+                      }}
+                    >
+                      <Typography variant="subtitle1" fontWeight="bold">
+                        {new Date(workout.date).toLocaleDateString()}
+                      </Typography>
+                      <Chip
+                        size="small"
+                        label={`${workout.exercises.length} exercises`}
+                      />
+                    </Box>
+
+                    <Box sx={{ mb: 1 }}>
+                      {workout.exercises.map((exercise, index) => (
+                        <Typography
+                          key={index}
+                          variant="body2"
+                          color="text.secondary"
+                        >
+                          {exercise.name}: {exercise.sets}x{exercise.reps} @{" "}
+                          {exercise.weight}kg
+                        </Typography>
+                      ))}
+                    </Box>
+
+                    {/* {workout.notes && (
+                      <Typography variant="body2" sx={{ fontStyle: 'italic', color: 'text.secondary' }}>
+                        "{workout.notes}"
+                      </Typography>
+                    )} */}
+                  </Paper>
+                ))}
+              </CardContent>
+            </Card>
+          </Box>
+
+          {/* Goals & Progress */}
+          <Box
+            sx={{
+              flex: {
+                xs: "1 1 100%", // Full width on small screens
+                md: "1 1 32%", // ~1/3 width on medium and larger screens
+              },
+            }}
+          >
+            <Card>
+              <CardHeader
+                title="Current Goals"
+                titleTypographyProps={{ variant: "h6", fontWeight: "bold" }}
+              />
+              <CardContent>
+                {mockGoals.map((goal) => (
+                  <Box key={goal.id} sx={{ mb: 3, "&:last-child": { mb: 0 } }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        mb: 1,
+                      }}
+                    >
+                      <Typography variant="subtitle2">{goal.title}</Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {goal.current}/{goal.target}
+                      </Typography>
+                    </Box>
+                    <LinearProgress
+                      variant="determinate"
+                      value={goal.progress}
+                      sx={{ height: 8, borderRadius: 4 }}
+                    />
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      sx={{ mt: 0.5, display: "block" }}
+                    >
+                      {goal.progress}% complete
+                    </Typography>
+                  </Box>
+                ))}
+              </CardContent>
+            </Card>
+          </Box>
+        </Box>
+      </Box>
+    </Box>
   );
 }
