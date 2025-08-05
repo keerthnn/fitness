@@ -1,15 +1,15 @@
 // src/app/exercises/[id]/page.tsx
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { 
-  Box, 
-  Typography, 
-  Card, 
-  CardContent, 
-  Button, 
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import {
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  Button,
   Paper,
   Chip,
   Divider,
@@ -20,9 +20,9 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
-  Avatar
-} from '@mui/material'
-import { 
+  Avatar,
+} from "@mui/material";
+import {
   ArrowBack,
   Edit,
   Delete,
@@ -35,59 +35,63 @@ import {
   TrendingUp,
   Person,
   Public,
-  Lock
-} from '@mui/icons-material'
+  Lock,
+} from "@mui/icons-material";
+import Navbar from "fitness/app/components/layout/Navbar";
 
 interface Exercise {
-  id: string
-  name: string
-  category: string
-  equipment: string
-  difficulty: string
-  description: string
-  instructions: string
-  tips: string
-  muscleGroups: string[]
-  isPublic: boolean
+  id: string;
+  name: string;
+  category: string;
+  equipment: string;
+  difficulty: string;
+  description: string;
+  instructions: string;
+  tips: string;
+  muscleGroups: string[];
+  isPublic: boolean;
   createdBy: {
-    id: string
-    name: string
-    avatar?: string
-  }
-  createdAt: string
-  isFavorited: boolean
-  usageCount: number
+    id: string;
+    name: string;
+    avatar?: string;
+  };
+  createdAt: string;
+  isFavorited: boolean;
+  usageCount: number;
 }
 
 interface ExerciseDetailPageProps {
   params: {
-    id: string
-  }
+    id: string;
+  };
 }
 
-export default function ExerciseDetailPage({ params }: ExerciseDetailPageProps) {
-  const router = useRouter()
-  const [exercise, setExercise] = useState<Exercise | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState('')
-  const [isFavorited, setIsFavorited] = useState(false)
-  const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null)
+export default function ExerciseDetailPage({
+  params,
+}: ExerciseDetailPageProps) {
+  const router = useRouter();
+  const [exercise, setExercise] = useState<Exercise | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [isFavorited, setIsFavorited] = useState(false);
+  const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
 
   useEffect(() => {
     const fetchExercise = async () => {
       try {
-        setIsLoading(true)
+        setIsLoading(true);
         // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
         // Mock data - replace with actual API call
         const mockExercise: Exercise = {
           id: params.id,
-          name: 'Bench Press',
-          category: 'Chest',
-          equipment: 'Barbell',
-          difficulty: 'Intermediate',
-          description: 'A compound upper body exercise that primarily targets the chest muscles, with secondary involvement of the shoulders and triceps. One of the most popular and effective exercises for building upper body strength and muscle mass.',
+          name: "Bench Press",
+          category: "Chest",
+          equipment: "Barbell",
+          difficulty: "Intermediate",
+          description:
+            "A compound upper body exercise that primarily targets the chest muscles, with secondary involvement of the shoulders and triceps. One of the most popular and effective exercises for building upper body strength and muscle mass.",
           instructions: `1. Lie flat on the bench with your eyes directly under the bar
 2. Grip the bar with hands slightly wider than shoulder-width apart
 3. Plant your feet firmly on the ground and maintain a slight arch in your back
@@ -101,111 +105,119 @@ export default function ExerciseDetailPage({ params }: ExerciseDetailPageProps) 
 • Breathe in on the descent, breathe out on the press
 • Keep your shoulders pulled back and down
 • Use a spotter for heavy weights`,
-          muscleGroups: ['Chest', 'Triceps', 'Shoulders'],
+          muscleGroups: ["Chest", "Triceps", "Shoulders"],
           isPublic: true,
           createdBy: {
-            id: 'user1',
-            name: 'John Doe',
-            avatar: '/avatars/john.jpg'
+            id: "user1",
+            name: "John Doe",
+            avatar: "/avatars/john.jpg",
           },
-          createdAt: '2024-01-15T10:30:00Z',
+          createdAt: "2024-01-15T10:30:00Z",
           isFavorited: false,
-          usageCount: 1247
-        }
-        
-        setExercise(mockExercise)
-        setIsFavorited(mockExercise.isFavorited)
-      } catch (err) {
-        console.error('Error fetching exercise:', err)
-        setError('Failed to load exercise details')
-      } finally {
-        setIsLoading(false)
-      }
-    }
+          usageCount: 1247,
+        };
 
-    fetchExercise()
-  }, [params.id])
+        setExercise(mockExercise);
+        setIsFavorited(mockExercise.isFavorited);
+      } catch (err) {
+        console.error("Error fetching exercise:", err);
+        setError("Failed to load exercise details");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchExercise();
+  }, [params.id]);
 
   const handleFavoriteToggle = async () => {
     try {
       // API call to toggle favorite
-      setIsFavorited(!isFavorited)
+      setIsFavorited(!isFavorited);
       // Update exercise data
       if (exercise) {
-        setExercise(prev => prev ? { ...prev, isFavorited: !isFavorited } : null)
+        setExercise((prev) =>
+          prev ? { ...prev, isFavorited: !isFavorited } : null
+        );
       }
     } catch (error) {
-      console.error('Error toggling favorite:', error)
+      console.error("Error toggling favorite:", error);
     }
-  }
+  };
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setMenuAnchor(event.currentTarget)
-  }
+    setMenuAnchor(event.currentTarget);
+  };
 
   const handleMenuClose = () => {
-    setMenuAnchor(null)
-  }
+    setMenuAnchor(null);
+  };
 
   const handleEdit = () => {
-    router.push(`/exercises/${params.id}/edit`)
-    handleMenuClose()
-  }
+    router.push(`/exercises/${params.id}/edit`);
+    handleMenuClose();
+  };
 
   const handleDelete = async () => {
-    if (confirm('Are you sure you want to delete this exercise?')) {
+    if (confirm("Are you sure you want to delete this exercise?")) {
       try {
         // API call to delete exercise
-        router.push('/exercises')
+        router.push("/exercises");
       } catch (error) {
-        console.error('Error deleting exercise:', error)
+        console.error("Error deleting exercise:", error);
       }
     }
-    handleMenuClose()
-  }
+    handleMenuClose();
+  };
 
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
         title: exercise?.name,
         text: exercise?.description,
-        url: window.location.href
-      })
+        url: window.location.href,
+      });
     } else {
-      navigator.clipboard.writeText(window.location.href)
+      navigator.clipboard.writeText(window.location.href);
       // You could show a toast notification here
     }
-    handleMenuClose()
-  }
+    handleMenuClose();
+  };
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty.toLowerCase()) {
-      case 'beginner': return 'success'
-      case 'intermediate': return 'warning'
-      case 'advanced': return 'error'
-      default: return 'default'
+      case "beginner":
+        return "success";
+      case "intermediate":
+        return "warning";
+      case "advanced":
+        return "error";
+      default:
+        return "default";
     }
-  }
+  };
 
   if (isLoading) {
     return (
-      <Box sx={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        minHeight: '100vh' 
-      }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100vh",
+        }}
+      >
         <CircularProgress />
       </Box>
-    )
+    );
   }
 
   if (error || !exercise) {
     return (
-      <Box sx={{ p: 3, minHeight: '100vh', bgcolor: 'background.default' }}>
-        <Box sx={{ maxWidth: 800, mx: 'auto' }}>
+      <Box sx={{ p: 3, minHeight: "100vh", bgcolor: "background.default" }}>
+        <Box sx={{ maxWidth: 800, mx: "auto" }}>
           <Alert severity="error" sx={{ mb: 3 }}>
-            {error || 'Exercise not found'}
+            {error || "Exercise not found"}
           </Alert>
           <Button
             component={Link}
@@ -217,17 +229,43 @@ export default function ExerciseDetailPage({ params }: ExerciseDetailPageProps) 
           </Button>
         </Box>
       </Box>
-    )
+    );
   }
 
   return (
-    <Box sx={{ p: 3, minHeight: '100vh', bgcolor: 'background.default' }}>
-      <Box sx={{ maxWidth: 800, mx: 'auto' }}>
-        {/* Header */}
-        <Paper sx={{ p: 3, mb: 4, bgcolor: 'primary.main', color: 'primary.contrastText' }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+    <Box sx={{ p: 3, minHeight: "100vh", bgcolor: "background.default" }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 4,
+          maxWidth: "1200px",
+          mx: "auto",
+        }}
+      >
+        <Navbar />
+      </Box>
+      <Box sx={{ maxWidth: 800, mx: "auto" }}>
+        <Paper
+          sx={{
+            p: 3,
+            mb: 4,
+            bgcolor: "primary.main",
+            color: "primary.contrastText",
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+            }}
+          >
             <Box sx={{ flex: 1 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+              <Box
+                sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}
+              >
                 <Button
                   component={Link}
                   href="/exercises"
@@ -242,44 +280,51 @@ export default function ExerciseDetailPage({ params }: ExerciseDetailPageProps) 
                   {exercise.name}
                 </Typography>
               </Box>
-              
-              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
-                <Chip 
-                  label={exercise.category} 
-                  size="small" 
-                  sx={{ bgcolor: 'rgba(255,255,255,0.2)', color: 'inherit' }} 
+
+              <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 2 }}>
+                <Chip
+                  label={exercise.category}
+                  size="small"
+                  sx={{ bgcolor: "rgba(255,255,255,0.2)", color: "inherit" }}
                 />
-                <Chip 
-                  label={exercise.equipment} 
-                  size="small" 
-                  sx={{ bgcolor: 'rgba(255,255,255,0.2)', color: 'inherit' }} 
+                <Chip
+                  label={exercise.equipment}
+                  size="small"
+                  sx={{ bgcolor: "rgba(255,255,255,0.2)", color: "inherit" }}
                 />
-                <Chip 
-                  label={exercise.difficulty} 
-                  size="small" 
+                <Chip
+                  label={exercise.difficulty}
+                  size="small"
                   color={getDifficultyColor(exercise.difficulty)}
                 />
                 {exercise.isPublic ? (
-                  <Chip 
+                  <Chip
                     icon={<Public fontSize="small" />}
-                    label="Public" 
-                    size="small" 
-                    sx={{ bgcolor: 'rgba(255,255,255,0.2)', color: 'inherit' }} 
+                    label="Public"
+                    size="small"
+                    sx={{ bgcolor: "rgba(255,255,255,0.2)", color: "inherit" }}
                   />
                 ) : (
-                  <Chip 
+                  <Chip
                     icon={<Lock fontSize="small" />}
-                    label="Private" 
-                    size="small" 
-                    sx={{ bgcolor: 'rgba(255,255,255,0.2)', color: 'inherit' }} 
+                    label="Private"
+                    size="small"
+                    sx={{ bgcolor: "rgba(255,255,255,0.2)", color: "inherit" }}
                   />
                 )}
               </Box>
 
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, opacity: 0.9 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Avatar 
-                    src={exercise.createdBy.avatar} 
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 2,
+                  opacity: 0.9,
+                }}
+              >
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <Avatar
+                    src={exercise.createdBy.avatar}
                     sx={{ width: 24, height: 24 }}
                   >
                     <Person fontSize="small" />
@@ -297,19 +342,19 @@ export default function ExerciseDetailPage({ params }: ExerciseDetailPageProps) 
               </Box>
             </Box>
 
-            <Box sx={{ display: 'flex', gap: 1 }}>
+            <Box sx={{ display: "flex", gap: 1 }}>
               <IconButton
                 onClick={handleFavoriteToggle}
                 color="inherit"
-                sx={{ bgcolor: 'rgba(255,255,255,0.1)' }}
+                sx={{ bgcolor: "rgba(255,255,255,0.1)" }}
               >
                 {isFavorited ? <Favorite /> : <FavoriteBorder />}
               </IconButton>
-              
+
               <IconButton
                 onClick={handleMenuOpen}
                 color="inherit"
-                sx={{ bgcolor: 'rgba(255,255,255,0.1)' }}
+                sx={{ bgcolor: "rgba(255,255,255,0.1)" }}
               >
                 <MoreVert />
               </IconButton>
@@ -337,7 +382,7 @@ export default function ExerciseDetailPage({ params }: ExerciseDetailPageProps) 
               Target Muscle Groups
             </Typography>
             <Divider sx={{ mb: 3 }} />
-            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+            <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
               {exercise.muscleGroups.map((muscle, index) => (
                 <Chip
                   key={index}
@@ -358,11 +403,11 @@ export default function ExerciseDetailPage({ params }: ExerciseDetailPageProps) 
               Instructions
             </Typography>
             <Divider sx={{ mb: 3 }} />
-            <Typography 
-              variant="body1" 
-              sx={{ 
-                whiteSpace: 'pre-line', 
-                lineHeight: 1.7 
+            <Typography
+              variant="body1"
+              sx={{
+                whiteSpace: "pre-line",
+                lineHeight: 1.7,
               }}
             >
               {exercise.instructions}
@@ -378,11 +423,11 @@ export default function ExerciseDetailPage({ params }: ExerciseDetailPageProps) 
                 Tips & Form Cues
               </Typography>
               <Divider sx={{ mb: 3 }} />
-              <Typography 
-                variant="body1" 
-                sx={{ 
-                  whiteSpace: 'pre-line', 
-                  lineHeight: 1.7 
+              <Typography
+                variant="body1"
+                sx={{
+                  whiteSpace: "pre-line",
+                  lineHeight: 1.7,
                 }}
               >
                 {exercise.tips}
@@ -392,15 +437,11 @@ export default function ExerciseDetailPage({ params }: ExerciseDetailPageProps) 
         )}
 
         {/* Action Buttons */}
-        <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', mt: 4 }}>
-          <Button
-            variant="contained"
-            startIcon={<Schedule />}
-            size="large"
-          >
+        <Box sx={{ display: "flex", gap: 2, justifyContent: "center", mt: 4 }}>
+          <Button variant="contained" startIcon={<Schedule />} size="large">
             Add to Workout
           </Button>
-          
+
           <Button
             component={Link}
             href={`/exercises/${exercise.id}/edit`}
@@ -417,8 +458,8 @@ export default function ExerciseDetailPage({ params }: ExerciseDetailPageProps) 
           anchorEl={menuAnchor}
           open={Boolean(menuAnchor)}
           onClose={handleMenuClose}
-          transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-          anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+          transformOrigin={{ horizontal: "right", vertical: "top" }}
+          anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
         >
           <MenuItem onClick={handleEdit}>
             <ListItemIcon>
@@ -426,17 +467,17 @@ export default function ExerciseDetailPage({ params }: ExerciseDetailPageProps) 
             </ListItemIcon>
             <ListItemText>Edit Exercise</ListItemText>
           </MenuItem>
-          
+
           <MenuItem onClick={handleShare}>
             <ListItemIcon>
               <Share fontSize="small" />
             </ListItemIcon>
             <ListItemText>Share Exercise</ListItemText>
           </MenuItem>
-          
+
           <Divider />
-          
-          <MenuItem onClick={handleDelete} sx={{ color: 'error.main' }}>
+
+          <MenuItem onClick={handleDelete} sx={{ color: "error.main" }}>
             <ListItemIcon>
               <Delete fontSize="small" color="error" />
             </ListItemIcon>
@@ -445,5 +486,5 @@ export default function ExerciseDetailPage({ params }: ExerciseDetailPageProps) 
         </Menu>
       </Box>
     </Box>
-  )
+  );
 }

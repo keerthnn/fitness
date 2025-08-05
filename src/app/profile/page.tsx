@@ -1,266 +1,282 @@
-"use client";
-
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import {
   Box,
   Typography,
   Card,
   CardContent,
-  TextField,
   Button,
-  MenuItem,
-  Paper,
   Divider,
-  CircularProgress,
+  Chip,
+  Paper,
+  Avatar,
 } from "@mui/material";
-import { Save, Cancel } from "@mui/icons-material";
+import { Edit, Person, FitnessCenter, Timeline } from "@mui/icons-material";
 import Link from "next/link";
+import Navbar from "../components/layout/Navbar";
 
-export default function EditProfilePage() {
-  const router = useRouter();
-
-  // In a real app, you'd fetch current user data
-  const [formData, setFormData] = useState({
+export default function ProfilePage() {
+  const user = {
     name: "John Doe",
     email: "john.doe@example.com",
     age: 28,
-    height: "5'10",
+    height: "5'10\"",
     currentWeight: 165,
     goalWeight: 155,
     fitnessLevel: "Intermediate",
-  });
-
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    memberSince: "January 2024",
+    totalWorkouts: 24,
   };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      // In a real app, you'd make an API call here
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
-
-      // Redirect back to profile page
-      router.push("/profile");
-    } catch (error) {
-      console.error("Error updating profile:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const fitnessLevels = [
-    { value: "Beginner", label: "Beginner" },
-    { value: "Intermediate", label: "Intermediate" },
-    { value: "Advanced", label: "Advanced" },
-  ];
 
   return (
     <Box sx={{ p: 3, minHeight: "100vh", bgcolor: "background.default" }}>
-      <Box sx={{ maxWidth: 800, mx: "auto" }}>
-        <Card>
-          {/* Header */}
-          <Paper
-            sx={{
-              p: 3,
-              bgcolor: "primary.main",
-              color: "primary.contrastText",
-            }}
-          >
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 4,
+          maxWidth: "1200px",
+          mx: "auto",
+        }}
+      >
+        <Navbar />
+      </Box>
+
+      <Box sx={{ maxWidth: 1000, mx: "auto" }}>
+        <Card
+          sx={{ mb: 4, bgcolor: "primary.main", color: "primary.contrastText" }}
+        >
+          <CardContent sx={{ p: 4 }}>
             <Box
               sx={{
                 display: "flex",
                 justifyContent: "space-between",
-                alignItems: "center",
+                alignItems: "flex-start",
+                flexWrap: "wrap",
+                gap: 2,
               }}
             >
-              <Typography variant="h4" component="h1" fontWeight="bold">
-                Edit Profile
-              </Typography>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 3 }}>
+                <Avatar
+                  sx={{ width: 80, height: 80, bgcolor: "primary.light" }}
+                >
+                  <Person sx={{ fontSize: 40 }} />
+                </Avatar>
+                <Box>
+                  <Typography variant="h3" fontWeight="bold" gutterBottom>
+                    {user.name}
+                  </Typography>
+                  <Typography variant="h6" sx={{ opacity: 0.9 }}>
+                    {user.email}
+                  </Typography>
+                  <Typography variant="body2" sx={{ opacity: 0.8, mt: 1 }}>
+                    Member since {user.memberSince}
+                  </Typography>
+                </Box>
+              </Box>
               <Button
                 component={Link}
-                href="/profile"
-                variant="outlined"
+                href="/profile/edit"
+                variant="contained"
                 color="inherit"
-                startIcon={<Cancel />}
+                startIcon={<Edit />}
+                sx={{ color: "primary.main" }}
               >
-                Cancel
+                Edit Profile
               </Button>
-            </Box>
-          </Paper>
-
-          {/* Form */}
-          <CardContent sx={{ p: 4 }}>
-            <Box component="form" onSubmit={handleSubmit}>
-              {/* Basic Information */}
-              <Typography variant="h6" fontWeight="bold" gutterBottom>
-                Basic Information
-              </Typography>
-              <Divider sx={{ mb: 3 }} />
-
-              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 3, mb: 4 }}>
-                <Box sx={{ flex: { xs: "1 1 100%", md: "1 1 48%" } }}>
-                  <TextField
-                    fullWidth
-                    label="Full Name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    required
-                    variant="outlined"
-                  />
-                </Box>
-
-                <Box sx={{ flex: { xs: "1 1 100%", md: "1 1 48%" } }}>
-                  <TextField
-                    fullWidth
-                    label="Email"
-                    name="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    required
-                    variant="outlined"
-                  />
-                </Box>
-              </Box>
-
-              {/* Physical Information */}
-              <Typography variant="h6" fontWeight="bold" gutterBottom>
-                Physical Information
-              </Typography>
-              <Divider sx={{ mb: 3 }} />
-
-              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 3, mb: 4 }}>
-                <Box sx={{ flex: { xs: "1 1 100%", md: "1 1 48%" } }}>
-                  <TextField
-                    fullWidth
-                    label="Age"
-                    name="age"
-                    type="number"
-                    value={formData.age}
-                    onChange={handleInputChange}
-                    required
-                    inputProps={{ min: 13, max: 120 }}
-                    variant="outlined"
-                  />
-                </Box>
-
-                <Box sx={{ flex: { xs: "1 1 100%", md: "1 1 48%" } }}>
-                  <TextField
-                    fullWidth
-                    label="Height"
-                    name="height"
-                    value={formData.height}
-                    onChange={handleInputChange}
-                    required
-                    placeholder="e.g., 5'10"
-                    variant="outlined"
-                  />
-                </Box>
-
-                <Box sx={{ flex: { xs: "1 1 100%", md: "1 1 48%" } }}>
-                  <TextField
-                    fullWidth
-                    select
-                    label="Fitness Level"
-                    name="fitnessLevel"
-                    value={formData.fitnessLevel}
-                    onChange={handleInputChange}
-                    required
-                    variant="outlined"
-                  >
-                    {fitnessLevels.map((option) => (
-                      <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                </Box>
-              </Box>
-
-              {/* Weight Information */}
-              <Typography variant="h6" fontWeight="bold" gutterBottom>
-                Weight Goals
-              </Typography>
-              <Divider sx={{ mb: 3 }} />
-
-              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 3, mb: 4 }}>
-                <Box sx={{ flex: { xs: "1 1 100%", md: "1 1 48%" } }}>
-                  <TextField
-                    fullWidth
-                    label="Current Weight (lbs)"
-                    name="currentWeight"
-                    type="number"
-                    value={formData.currentWeight}
-                    onChange={handleInputChange}
-                    required
-                    inputProps={{ min: 50, max: 500 }}
-                    variant="outlined"
-                  />
-                </Box>
-
-                <Box sx={{ flex: { xs: "1 1 100%", md: "1 1 48%" } }}>
-                  <TextField
-                    fullWidth
-                    label="Goal Weight (lbs)"
-                    name="goalWeight"
-                    type="number"
-                    value={formData.goalWeight}
-                    onChange={handleInputChange}
-                    required
-                    inputProps={{ min: 50, max: 500 }}
-                    variant="outlined"
-                  />
-                </Box>
-              </Box>
-
-              {/* Submit Buttons */}
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  gap: 2,
-                  pt: 3,
-                  borderTop: 1,
-                  borderColor: "divider",
-                }}
-              >
-                <Button
-                  component={Link}
-                  href="/profile"
-                  variant="outlined"
-                  color="primary"
-                  startIcon={<Cancel />}
-                  size="large"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  disabled={isLoading}
-                  startIcon={
-                    isLoading ? <CircularProgress size={16} /> : <Save />
-                  }
-                  size="large"
-                >
-                  {isLoading ? "Saving..." : "Save Changes"}
-                </Button>
-              </Box>
             </Box>
           </CardContent>
         </Card>
+
+        {/* Replace Grid with Flex Box layout */}
+        <Box
+          sx={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 4,
+            mb: 4,
+          }}
+        >
+          {/* Personal Info */}
+          <Box sx={{ flex: "1 1 300px", minWidth: "300px" }}>
+            <Card>
+              <CardContent>
+                <Typography variant="h5" fontWeight="bold" gutterBottom>
+                  Personal Information
+                </Typography>
+                <Divider sx={{ mb: 3 }} />
+
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  {[
+                    ["Age", `${user.age} years`],
+                    ["Height", user.height],
+                    ["Current Weight", `${user.currentWeight} lbs`],
+                    ["Goal Weight", `${user.goalWeight} lbs`],
+                  ].map(([label, value]) => (
+                    <Box
+                      key={label}
+                      sx={{ display: "flex", justifyContent: "space-between" }}
+                    >
+                      <Typography color="text.secondary">{label}:</Typography>
+                      <Typography fontWeight="medium">{value}</Typography>
+                    </Box>
+                  ))}
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Typography color="text.secondary">
+                      Fitness Level:
+                    </Typography>
+                    <Chip
+                      label={user.fitnessLevel}
+                      color="primary"
+                      variant="outlined"
+                    />
+                  </Box>
+                </Box>
+              </CardContent>
+            </Card>
+          </Box>
+
+          {/* Fitness Stats */}
+          <Box sx={{ flex: "1 1 300px", minWidth: "300px" }}>
+            <Card>
+              <CardContent>
+                <Typography variant="h5" fontWeight="bold" gutterBottom>
+                  Fitness Stats
+                </Typography>
+                <Divider sx={{ mb: 3 }} />
+
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <Paper
+                    sx={{
+                      p: 2,
+                      bgcolor: "primary.light",
+                      color: "primary.contrastText",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                        <FitnessCenter />
+                        <Typography>Total Workouts</Typography>
+                      </Box>
+                      <Typography variant="h4" fontWeight="bold">
+                        {user.totalWorkouts}
+                      </Typography>
+                    </Box>
+                  </Paper>
+
+                  <Paper
+                    sx={{
+                      p: 2,
+                      bgcolor: "success.light",
+                      color: "success.contrastText",
+                    }}
+                  >
+                    <Box
+                      sx={{ display: "flex", justifyContent: "space-between" }}
+                    >
+                      <Typography>Weight to Lose</Typography>
+                      <Typography variant="h4" fontWeight="bold">
+                        {user.currentWeight - user.goalWeight} lbs
+                      </Typography>
+                    </Box>
+                  </Paper>
+
+                  <Paper
+                    sx={{
+                      p: 2,
+                      bgcolor: "secondary.light",
+                      color: "secondary.contrastText",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                        <Timeline />
+                        <Typography>Progress</Typography>
+                      </Box>
+                      <Typography variant="h4" fontWeight="bold">
+                        75%
+                      </Typography>
+                    </Box>
+                  </Paper>
+                </Box>
+              </CardContent>
+            </Card>
+          </Box>
+        </Box>
+
+        {/* Goals Section */}
+        <Box>
+          <Card>
+            <CardContent>
+              <Typography variant="h5" fontWeight="bold" gutterBottom>
+                Current Goals
+              </Typography>
+              <Divider sx={{ mb: 3 }} />
+
+              <Box
+                sx={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: 3,
+                }}
+              >
+                {[
+                  {
+                    title: "Weight Loss",
+                    description: "Lose 10 lbs by June",
+                    color: "info.light",
+                    text: "info.contrastText",
+                  },
+                  {
+                    title: "Strength",
+                    description: "Bench press 200 lbs",
+                    color: "success.light",
+                    text: "success.contrastText",
+                  },
+                  {
+                    title: "Endurance",
+                    description: "Run 5K under 25 min",
+                    color: "warning.light",
+                    text: "warning.contrastText",
+                  },
+                ].map((goal) => (
+                  <Paper
+                    key={goal.title}
+                    sx={{
+                      p: 3,
+                      flex: "1 1 250px",
+                      bgcolor: goal.color,
+                      color: goal.text,
+                      textAlign: "center",
+                    }}
+                  >
+                    <Typography variant="h6" fontWeight="bold" gutterBottom>
+                      {goal.title}
+                    </Typography>
+                    <Typography variant="body2">{goal.description}</Typography>
+                  </Paper>
+                ))}
+              </Box>
+            </CardContent>
+          </Card>
+        </Box>
       </Box>
     </Box>
   );

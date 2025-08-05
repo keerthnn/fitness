@@ -1,27 +1,28 @@
-import { 
-  Box, 
-  Typography, 
-  Card, 
-  CardContent, 
-  Button, 
+import {
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  Button,
   Chip,
   TextField,
   InputAdornment,
   Paper,
   Avatar,
   IconButton,
-} from '@mui/material'
-import { 
-  Add, 
-  Search, 
-  FilterList, 
+} from "@mui/material";
+import {
+  Add,
+  Search,
+  FilterList,
   FitnessCenter,
   Favorite,
   PlayArrow,
   Info,
-  TrendingUp
-} from '@mui/icons-material'
-import Link from 'next/link'
+  TrendingUp,
+} from "@mui/icons-material";
+import Link from "next/link";
+import Navbar from "../components/layout/Navbar";
 
 export default function ExercisesPage() {
   const exercises = [
@@ -32,11 +33,13 @@ export default function ExercisesPage() {
       equipment: "Barbell",
       difficulty: "Intermediate",
       muscleGroups: ["Chest", "Triceps", "Shoulders"],
-      description: "Classic compound movement for building chest strength and mass.",
-      instructions: "Lie on bench, grip bar slightly wider than shoulders, lower to chest, press up.",
+      description:
+        "Classic compound movement for building chest strength and mass.",
+      instructions:
+        "Lie on bench, grip bar slightly wider than shoulders, lower to chest, press up.",
       tips: "Keep shoulders back, maintain arch, control the weight",
       isFavorite: true,
-      timesUsed: 24
+      timesUsed: 24,
     },
     {
       id: 2,
@@ -46,10 +49,11 @@ export default function ExercisesPage() {
       difficulty: "Advanced",
       muscleGroups: ["Back", "Glutes", "Hamstrings"],
       description: "The king of all exercises. Full body compound movement.",
-      instructions: "Hip hinge, grip bar, keep back straight, drive through heels.",
+      instructions:
+        "Hip hinge, grip bar, keep back straight, drive through heels.",
       tips: "Engage core, neutral spine, bar close to body",
       isFavorite: true,
-      timesUsed: 18
+      timesUsed: 18,
     },
     {
       id: 3,
@@ -62,7 +66,7 @@ export default function ExercisesPage() {
       instructions: "Plank position, lower chest to ground, push back up.",
       tips: "Keep body straight, full range of motion",
       isFavorite: false,
-      timesUsed: 32
+      timesUsed: 32,
     },
     {
       id: 4,
@@ -72,10 +76,11 @@ export default function ExercisesPage() {
       difficulty: "Intermediate",
       muscleGroups: ["Quadriceps", "Glutes", "Core"],
       description: "Fundamental leg exercise for lower body development.",
-      instructions: "Feet shoulder-width apart, lower hips back, drive through heels.",
+      instructions:
+        "Feet shoulder-width apart, lower hips back, drive through heels.",
       tips: "Chest up, knees track over toes, depth is key",
       isFavorite: true,
-      timesUsed: 21
+      timesUsed: 21,
     },
     {
       id: 5,
@@ -88,7 +93,7 @@ export default function ExercisesPage() {
       instructions: "Hang from bar, pull body up until chin clears bar.",
       tips: "Full range of motion, control the descent",
       isFavorite: false,
-      timesUsed: 15
+      timesUsed: 15,
     },
     {
       id: 6,
@@ -101,44 +106,88 @@ export default function ExercisesPage() {
       instructions: "Forearm plank position, hold steady, breathe normally.",
       tips: "Straight line from head to heels, engage core",
       isFavorite: false,
-      timesUsed: 28
-    }
-  ]
+      timesUsed: 28,
+    },
+  ];
 
-  const categories = ["All", "Chest", "Back", "Legs", "Shoulders", "Arms", "Core"]
-  const equipment = ["All", "Barbell", "Dumbbell", "Bodyweight", "Machine", "Cable"]
-  const difficulties = ["All", "Beginner", "Intermediate", "Advanced"]
+  const categories = [
+    "All",
+    "Chest",
+    "Back",
+    "Legs",
+    "Shoulders",
+    "Arms",
+    "Core",
+  ];
+  const equipment = [
+    "All",
+    "Barbell",
+    "Dumbbell",
+    "Bodyweight",
+    "Machine",
+    "Cable",
+  ];
+  const difficulties = ["All", "Beginner", "Intermediate", "Advanced"];
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'Beginner': return 'success'
-      case 'Intermediate': return 'warning'
-      case 'Advanced': return 'error'
-      default: return 'default'
+      case "Beginner":
+        return "success";
+      case "Intermediate":
+        return "warning";
+      case "Advanced":
+        return "error";
+      default:
+        return "default";
     }
-  }
+  };
 
   const stats = {
     totalExercises: exercises.length,
-    favorites: exercises.filter(e => e.isFavorite).length,
+    favorites: exercises.filter((e) => e.isFavorite).length,
     categories: categories.length - 1,
-    avgUsage: Math.round(exercises.reduce((sum, e) => sum + e.timesUsed, 0) / exercises.length)
-  }
+    avgUsage: Math.round(
+      exercises.reduce((sum, e) => sum + e.timesUsed, 0) / exercises.length
+    ),
+  };
 
   return (
-    <Box sx={{ p: 3, minHeight: '100vh', bgcolor: 'background.default' }}>
-      <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
-        {/* Header */}
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+    <Box sx={{ p: 3, minHeight: "100vh", bgcolor: "background.default" }}>
+      <Box sx={{ maxWidth: 1200, mx: "auto" }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 4,
+            maxWidth: "1200px",
+            mx: "auto",
+          }}
+        >
+          <Navbar />
+        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 4,
+          }}
+        >
           <Box>
-            <Typography variant="h3" component="h1" fontWeight="bold" gutterBottom>
+            <Typography
+              variant="h3"
+              component="h1"
+              fontWeight="bold"
+              gutterBottom
+            >
               Exercise Library
             </Typography>
             <Typography variant="body1" color="text.secondary">
               Discover and master new exercises for your workouts
             </Typography>
           </Box>
-          
+
           <Button
             component={Link}
             href="/exercises/new"
@@ -151,40 +200,48 @@ export default function ExercisesPage() {
         </Box>
 
         {/* Stats */}
-        <Box sx={{ display: 'flex', gap: 3, mb: 4, flexWrap: 'wrap' }}>
-          <Paper sx={{ p: 3, flex: 1, minWidth: 200, textAlign: 'center' }}>
+        <Box sx={{ display: "flex", gap: 3, mb: 4, flexWrap: "wrap" }}>
+          <Paper sx={{ p: 3, flex: 1, minWidth: 200, textAlign: "center" }}>
             <Typography variant="h4" fontWeight="bold" color="primary.main">
               {stats.totalExercises}
             </Typography>
-            <Typography variant="body2" color="text.secondary">Total Exercises</Typography>
+            <Typography variant="body2" color="text.secondary">
+              Total Exercises
+            </Typography>
           </Paper>
-          
-          <Paper sx={{ p: 3, flex: 1, minWidth: 200, textAlign: 'center' }}>
+
+          <Paper sx={{ p: 3, flex: 1, minWidth: 200, textAlign: "center" }}>
             <Typography variant="h4" fontWeight="bold" color="error.main">
               {stats.favorites}
             </Typography>
-            <Typography variant="body2" color="text.secondary">Favorites</Typography>
+            <Typography variant="body2" color="text.secondary">
+              Favorites
+            </Typography>
           </Paper>
-          
-          <Paper sx={{ p: 3, flex: 1, minWidth: 200, textAlign: 'center' }}>
+
+          <Paper sx={{ p: 3, flex: 1, minWidth: 200, textAlign: "center" }}>
             <Typography variant="h4" fontWeight="bold" color="success.main">
               {stats.categories}
             </Typography>
-            <Typography variant="body2" color="text.secondary">Categories</Typography>
+            <Typography variant="body2" color="text.secondary">
+              Categories
+            </Typography>
           </Paper>
-          
-          <Paper sx={{ p: 3, flex: 1, minWidth: 200, textAlign: 'center' }}>
+
+          <Paper sx={{ p: 3, flex: 1, minWidth: 200, textAlign: "center" }}>
             <Typography variant="h4" fontWeight="bold" color="info.main">
               {stats.avgUsage}
             </Typography>
-            <Typography variant="body2" color="text.secondary">Avg Uses</Typography>
+            <Typography variant="body2" color="text.secondary">
+              Avg Uses
+            </Typography>
           </Paper>
         </Box>
 
         {/* Search and Filters */}
         <Card sx={{ mb: 4 }}>
           <CardContent sx={{ p: 3 }}>
-            <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
+            <Box sx={{ display: "flex", gap: 2, mb: 3, flexWrap: "wrap" }}>
               <TextField
                 placeholder="Search exercises..."
                 variant="outlined"
@@ -198,7 +255,7 @@ export default function ExercisesPage() {
                   ),
                 }}
               />
-              
+
               <Button
                 variant="outlined"
                 startIcon={<FilterList />}
@@ -207,10 +264,14 @@ export default function ExercisesPage() {
                 Filters
               </Button>
             </Box>
-            
-            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                <Typography variant="body2" color="text.secondary" sx={{ alignSelf: 'center', mr: 1 }}>
+
+            <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+              <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ alignSelf: "center", mr: 1 }}
+                >
                   Categories:
                 </Typography>
                 {categories.map((category) => (
@@ -228,57 +289,115 @@ export default function ExercisesPage() {
         </Card>
 
         {/* Exercise Grid */}
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
           {exercises.map((exercise) => (
-            <Card key={exercise.id} sx={{ '&:hover': { boxShadow: 4 }, transition: 'box-shadow 0.3s' }}>
+            <Card
+              key={exercise.id}
+              sx={{
+                "&:hover": { boxShadow: 4 },
+                transition: "box-shadow 0.3s",
+              }}
+            >
               <CardContent sx={{ p: 4 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 3 }}>
-                  <Box sx={{ display: 'flex', gap: 3, flex: 1 }}>
-                    <Avatar sx={{ bgcolor: 'primary.main', width: 64, height: 64 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    gap: 3,
+                  }}
+                >
+                  <Box sx={{ display: "flex", gap: 3, flex: 1 }}>
+                    <Avatar
+                      sx={{ bgcolor: "primary.main", width: 64, height: 64 }}
+                    >
                       <FitnessCenter sx={{ fontSize: 32 }} />
                     </Avatar>
-                    
+
                     <Box sx={{ flex: 1 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 2,
+                          mb: 1,
+                        }}
+                      >
                         <Typography variant="h5" fontWeight="bold">
                           {exercise.name}
                         </Typography>
                         {exercise.isFavorite && (
-                          <Favorite sx={{ color: 'error.main', fontSize: 20 }} />
+                          <Favorite
+                            sx={{ color: "error.main", fontSize: 20 }}
+                          />
                         )}
                       </Box>
-                      
-                      <Box sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
-                        <Chip label={exercise.category} variant="outlined" size="small" />
-                        <Chip label={exercise.equipment} variant="outlined" size="small" />
-                        <Chip 
-                          label={exercise.difficulty} 
-                          color={getDifficultyColor(exercise.difficulty) }
-                          variant="outlined" 
-                          size="small" 
+
+                      <Box
+                        sx={{
+                          display: "flex",
+                          gap: 1,
+                          mb: 2,
+                          flexWrap: "wrap",
+                        }}
+                      >
+                        <Chip
+                          label={exercise.category}
+                          variant="outlined"
+                          size="small"
+                        />
+                        <Chip
+                          label={exercise.equipment}
+                          variant="outlined"
+                          size="small"
+                        />
+                        <Chip
+                          label={exercise.difficulty}
+                          color={getDifficultyColor(exercise.difficulty)}
+                          variant="outlined"
+                          size="small"
                         />
                       </Box>
-                      
-                      <Typography variant="body1" color="text.secondary" sx={{ mb: 2, lineHeight: 1.6 }}>
+
+                      <Typography
+                        variant="body1"
+                        color="text.secondary"
+                        sx={{ mb: 2, lineHeight: 1.6 }}
+                      >
                         {exercise.description}
                       </Typography>
-                      
-                      <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                          <TrendingUp sx={{ fontSize: 16, color: 'text.secondary' }} />
+
+                      <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 0.5,
+                          }}
+                        >
+                          <TrendingUp
+                            sx={{ fontSize: 16, color: "text.secondary" }}
+                          />
                           <Typography variant="body2" color="text.secondary">
                             Used {exercise.timesUsed} times
                           </Typography>
                         </Box>
-                        
+
                         <Typography variant="body2" color="text.secondary">
-                          Targets: {exercise.muscleGroups.join(', ')}
+                          Targets: {exercise.muscleGroups.join(", ")}
                         </Typography>
                       </Box>
                     </Box>
                   </Box>
-                  
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, alignItems: 'flex-end', minWidth: 120 }}>
+
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 1,
+                      alignItems: "flex-end",
+                      minWidth: 120,
+                    }}
+                  >
                     <Button
                       component={Link}
                       href={`/exercises/${exercise.id}`}
@@ -289,7 +408,7 @@ export default function ExercisesPage() {
                     >
                       Details
                     </Button>
-                    
+
                     <Button
                       variant="outlined"
                       size="small"
@@ -298,7 +417,7 @@ export default function ExercisesPage() {
                     >
                       Use in Workout
                     </Button>
-                    
+
                     <IconButton
                       color={exercise.isFavorite ? "error" : "default"}
                       size="small"
@@ -313,5 +432,5 @@ export default function ExercisesPage() {
         </Box>
       </Box>
     </Box>
-  )
+  );
 }

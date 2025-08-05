@@ -1,118 +1,133 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { 
-  Box, 
-  Typography, 
-  Card, 
-  CardContent, 
-  TextField, 
-  Button, 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  TextField,
+  Button,
   Paper,
   MenuItem,
   Divider,
   FormControlLabel,
   Switch,
-  Alert
-} from '@mui/material'
-import { 
-  Save, 
-  Cancel, 
-  Add,
-  Remove
-} from '@mui/icons-material'
-import Link from 'next/link'
+  Alert,
+} from "@mui/material";
+import { Save, Cancel, Add, Remove } from "@mui/icons-material";
+import Link from "next/link";
+import Navbar from "fitness/app/components/layout/Navbar";
 
 export default function NewExercisePage() {
-  const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState('')
-  
-  const [exerciseData, setExerciseData] = useState({
-    name: '',
-    category: '',
-    equipment: '',
-    difficulty: '',
-    description: '',
-    instructions: '',
-    tips: '',
-    muscleGroups: [''],
-    isPublic: false
-  })
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const categories = ['Chest', 'Back', 'Legs', 'Shoulders', 'Arms', 'Core', 'Cardio', 'Full Body']
-  const equipmentTypes = ['Barbell', 'Dumbbell', 'Bodyweight', 'Machine', 'Cable', 'Resistance Band', 'Kettlebell']
-  const difficulties = ['Beginner', 'Intermediate', 'Advanced']
+  const [exerciseData, setExerciseData] = useState({
+    name: "",
+    category: "",
+    equipment: "",
+    difficulty: "",
+    description: "",
+    instructions: "",
+    tips: "",
+    muscleGroups: [""],
+    isPublic: false,
+  });
+
+  const categories = [
+    "Chest",
+    "Back",
+    "Legs",
+    "Shoulders",
+    "Arms",
+    "Core",
+    "Cardio",
+    "Full Body",
+  ];
+  const equipmentTypes = [
+    "Barbell",
+    "Dumbbell",
+    "Bodyweight",
+    "Machine",
+    "Cable",
+    "Resistance Band",
+    "Kettlebell",
+  ];
+  const difficulties = ["Beginner", "Intermediate", "Advanced"];
 
   const handleInputChange = (field: string, value: string | boolean) => {
-    setExerciseData(prev => ({ ...prev, [field]: value }))
-    if (error) setError('') // Clear error when user starts typing
-  }
+    setExerciseData((prev) => ({ ...prev, [field]: value }));
+    if (error) setError(""); // Clear error when user starts typing
+  };
 
   const handleMuscleGroupChange = (index: number, value: string) => {
-    setExerciseData(prev => ({
+    setExerciseData((prev) => ({
       ...prev,
-      muscleGroups: prev.muscleGroups.map((group, i) => i === index ? value : group)
-    }))
-  }
+      muscleGroups: prev.muscleGroups.map((group, i) =>
+        i === index ? value : group
+      ),
+    }));
+  };
 
   const addMuscleGroup = () => {
-    setExerciseData(prev => ({
+    setExerciseData((prev) => ({
       ...prev,
-      muscleGroups: [...prev.muscleGroups, '']
-    }))
-  }
+      muscleGroups: [...prev.muscleGroups, ""],
+    }));
+  };
 
   const removeMuscleGroup = (index: number) => {
-    setExerciseData(prev => ({
+    setExerciseData((prev) => ({
       ...prev,
-      muscleGroups: prev.muscleGroups.filter((_, i) => i !== index)
-    }))
-  }
+      muscleGroups: prev.muscleGroups.filter((_, i) => i !== index),
+    }));
+  };
 
   const validateForm = () => {
     if (!exerciseData.name.trim()) {
-      setError('Exercise name is required')
-      return false
+      setError("Exercise name is required");
+      return false;
     }
     if (!exerciseData.category) {
-      setError('Please select a category')
-      return false
+      setError("Please select a category");
+      return false;
     }
     if (!exerciseData.equipment) {
-      setError('Please select equipment type')
-      return false
+      setError("Please select equipment type");
+      return false;
     }
     if (!exerciseData.difficulty) {
-      setError('Please select difficulty level')
-      return false
+      setError("Please select difficulty level");
+      return false;
     }
     if (!exerciseData.description.trim()) {
-      setError('Description is required')
-      return false
+      setError("Description is required");
+      return false;
     }
     if (!exerciseData.instructions.trim()) {
-      setError('Instructions are required')
-      return false
+      setError("Instructions are required");
+      return false;
     }
-    if (exerciseData.muscleGroups.some(group => !group.trim())) {
-      setError('All muscle groups must be filled in')
-      return false
+    if (exerciseData.muscleGroups.some((group) => !group.trim())) {
+      setError("All muscle groups must be filled in");
+      return false;
     }
-    return true
-  }
+    return true;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
+    e.preventDefault();
+
     if (!validateForm()) {
-      return
+      return;
     }
-    
-    setIsLoading(true)
-    setError('')
-    
+
+    setIsLoading(true);
+    setError("");
+
     try {
       // Filter out empty muscle groups and trim values
       const cleanedData = {
@@ -121,28 +136,54 @@ export default function NewExercisePage() {
         description: exerciseData.description.trim(),
         instructions: exerciseData.instructions.trim(),
         tips: exerciseData.tips.trim(),
-        muscleGroups: exerciseData.muscleGroups.filter(group => group.trim()).map(group => group.trim())
-      }
-      
+        muscleGroups: exerciseData.muscleGroups
+          .filter((group) => group.trim())
+          .map((group) => group.trim()),
+      };
+
       // API call would go here
-      console.log('Creating exercise:', cleanedData)
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      router.push('/exercises')
+      console.log("Creating exercise:", cleanedData);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      router.push("/exercises");
     } catch (error) {
-      console.error('Error creating exercise:', error)
-      setError('Failed to create exercise. Please try again.')
+      console.error("Error creating exercise:", error);
+      setError("Failed to create exercise. Please try again.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
-    <Box sx={{ p: 3, minHeight: '100vh', bgcolor: 'background.default' }}>
-      <Box sx={{ maxWidth: 800, mx: 'auto' }}>
-        {/* Header */}
-        <Paper sx={{ p: 3, mb: 4, bgcolor: 'success.main', color: 'success.contrastText' }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <Box sx={{ p: 3, minHeight: "100vh", bgcolor: "background.default" }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 4,
+          maxWidth: "1200px",
+          mx: "auto",
+        }}
+      >
+        <Navbar />
+      </Box>
+      <Box sx={{ maxWidth: 800, mx: "auto" }}>
+        <Paper
+          sx={{
+            p: 3,
+            mb: 4,
+            bgcolor: "success.main",
+            color: "success.contrastText",
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
             <Box>
               <Typography variant="h4" fontWeight="bold" gutterBottom>
                 Add New Exercise
@@ -177,23 +218,25 @@ export default function NewExercisePage() {
                 Basic Information
               </Typography>
               <Divider sx={{ mb: 3 }} />
-              
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
                 <TextField
                   fullWidth
                   label="Exercise Name"
                   value={exerciseData.name}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  onChange={(e) => handleInputChange("name", e.target.value)}
                   required
                   placeholder="e.g., Bench Press"
                 />
-                
-                <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+
+                <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
                   <TextField
                     select
                     label="Category"
                     value={exerciseData.category}
-                    onChange={(e) => handleInputChange('category', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("category", e.target.value)
+                    }
                     required
                     sx={{ minWidth: 200, flex: 1 }}
                   >
@@ -203,12 +246,14 @@ export default function NewExercisePage() {
                       </MenuItem>
                     ))}
                   </TextField>
-                  
+
                   <TextField
                     select
                     label="Equipment"
                     value={exerciseData.equipment}
-                    onChange={(e) => handleInputChange('equipment', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("equipment", e.target.value)
+                    }
                     required
                     sx={{ minWidth: 200, flex: 1 }}
                   >
@@ -218,12 +263,14 @@ export default function NewExercisePage() {
                       </MenuItem>
                     ))}
                   </TextField>
-                  
+
                   <TextField
                     select
                     label="Difficulty"
                     value={exerciseData.difficulty}
-                    onChange={(e) => handleInputChange('difficulty', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("difficulty", e.target.value)
+                    }
                     required
                     sx={{ minWidth: 200, flex: 1 }}
                   >
@@ -234,14 +281,16 @@ export default function NewExercisePage() {
                     ))}
                   </TextField>
                 </Box>
-                
+
                 <TextField
                   fullWidth
                   multiline
                   rows={3}
                   label="Description"
                   value={exerciseData.description}
-                  onChange={(e) => handleInputChange('description', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("description", e.target.value)
+                  }
                   required
                   placeholder="Brief description of the exercise and its benefits..."
                 />
@@ -252,7 +301,14 @@ export default function NewExercisePage() {
           {/* Muscle Groups */}
           <Card sx={{ mb: 4 }}>
             <CardContent sx={{ p: 4 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  mb: 3,
+                }}
+              >
                 <Typography variant="h5" fontWeight="bold">
                   Target Muscle Groups
                 </Typography>
@@ -265,28 +321,33 @@ export default function NewExercisePage() {
                   Add Muscle Group
                 </Button>
               </Box>
-              
+
               <Divider sx={{ mb: 3 }} />
-              
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                 {exerciseData.muscleGroups.map((group, index) => (
-                  <Box key={index} sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                  <Box
+                    key={index}
+                    sx={{ display: "flex", gap: 2, alignItems: "center" }}
+                  >
                     <TextField
                       fullWidth
                       label={`Muscle Group ${index + 1}`}
                       value={group}
-                      onChange={(e) => handleMuscleGroupChange(index, e.target.value)}
+                      onChange={(e) =>
+                        handleMuscleGroupChange(index, e.target.value)
+                      }
                       required
                       placeholder="e.g., Chest, Triceps, Shoulders"
                     />
-                    
+
                     {exerciseData.muscleGroups.length > 1 && (
                       <Button
                         onClick={() => removeMuscleGroup(index)}
                         color="error"
                         variant="outlined"
                         size="small"
-                        sx={{ minWidth: 'auto', px: 1 }}
+                        sx={{ minWidth: "auto", px: 1 }}
                       >
                         <Remove />
                       </Button>
@@ -304,26 +365,28 @@ export default function NewExercisePage() {
                 Instructions & Tips
               </Typography>
               <Divider sx={{ mb: 3 }} />
-              
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
                 <TextField
                   fullWidth
                   multiline
                   rows={4}
                   label="Step-by-step Instructions"
                   value={exerciseData.instructions}
-                  onChange={(e) => handleInputChange('instructions', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("instructions", e.target.value)
+                  }
                   required
                   placeholder="1. Set up position...&#10;2. Perform the movement...&#10;3. Return to starting position..."
                 />
-                
+
                 <TextField
                   fullWidth
                   multiline
                   rows={3}
                   label="Tips & Form Cues (Optional)"
                   value={exerciseData.tips}
-                  onChange={(e) => handleInputChange('tips', e.target.value)}
+                  onChange={(e) => handleInputChange("tips", e.target.value)}
                   placeholder="Important form tips, common mistakes to avoid, breathing cues..."
                 />
               </Box>
@@ -337,12 +400,14 @@ export default function NewExercisePage() {
                 Settings
               </Typography>
               <Divider sx={{ mb: 3 }} />
-              
+
               <FormControlLabel
                 control={
                   <Switch
                     checked={exerciseData.isPublic}
-                    onChange={(e) => handleInputChange('isPublic', e.target.checked)}
+                    onChange={(e) =>
+                      handleInputChange("isPublic", e.target.checked)
+                    }
                     color="primary"
                   />
                 }
@@ -361,7 +426,7 @@ export default function NewExercisePage() {
           </Card>
 
           {/* Action Buttons */}
-          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
+          <Box sx={{ display: "flex", gap: 2, justifyContent: "flex-end" }}>
             <Button
               component={Link}
               href="/exercises"
@@ -371,7 +436,7 @@ export default function NewExercisePage() {
             >
               Cancel
             </Button>
-            
+
             <Button
               type="submit"
               variant="contained"
@@ -379,11 +444,11 @@ export default function NewExercisePage() {
               disabled={isLoading}
               sx={{ minWidth: 120 }}
             >
-              {isLoading ? 'Creating...' : 'Create Exercise'}
+              {isLoading ? "Creating..." : "Create Exercise"}
             </Button>
           </Box>
         </Box>
       </Box>
     </Box>
-  )
+  );
 }

@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Box,
   Typography,
@@ -20,12 +22,24 @@ import {
   MenuBook,
 } from "@mui/icons-material";
 import Link from "next/link";
+import Navbar from "../components/layout/Navbar";
 
 export default function DashboardPage() {
   return (
     <Box sx={{ p: 3, minHeight: "100vh", bgcolor: "background.default" }}>
       <Box sx={{ maxWidth: 1200, mx: "auto" }}>
-        {/* Header */}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 4,
+            maxWidth: "1200px",
+            mx: "auto",
+          }}
+        >
+          <Navbar />
+        </Box>
         <Box sx={{ mb: 4 }}>
           <Typography
             variant="h3"

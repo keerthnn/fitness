@@ -1,21 +1,18 @@
-import type { Metadata } from 'next'
-import ClientThemeProvider from './theme-provider' // step 2
+import type { Metadata } from 'next';
+import { ReactNode } from 'react';
+import ClientLayout from './ClientLayout';
 
 export const metadata: Metadata = {
   title: 'Fitness Tracker',
   description: 'Track your workouts and fitness progress',
-}
+};
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body>
-        <ClientThemeProvider>{children}</ClientThemeProvider>
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
-  )
+  );
 }

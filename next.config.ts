@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  experimental: {
+    // no appDir here — it's obsolete
+  },
 };
 
 export default nextConfig;

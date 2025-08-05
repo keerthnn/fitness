@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import {
   Button,
   Card,
@@ -10,27 +10,18 @@ import {
   Box,
   Chip,
   LinearProgress,
-  Avatar,
-  IconButton,
-  Menu,
-  MenuItem,
-  Divider,
   Paper,
-  ListItemIcon,
 } from "@mui/material";
 import {
   FitnessCenter,
   CalendarToday,
   TrendingUp,
-  Person,
-  Settings,
-  ExitToApp,
   Today,
   Assessment,
-  Schedule,
   Add,
 } from "@mui/icons-material";
-import { useRouter } from "next/navigation"; // Note: App Router uses 'next/navigation'
+import { useRouter } from "next/navigation"; 
+import Navbar from "./components/layout/Navbar";
 
 // Mock data - replace with actual API calls
 const mockUser = {
@@ -82,23 +73,9 @@ const mockGoals = [
 
 export default function HomePage() {
   const router = useRouter();
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
-  const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleProfileMenuClose = () => {
-    setAnchorEl(null);
-  };
-
-  const navigateToProfile = () => {
-    router.push("/profile");
-    handleProfileMenuClose();
-  };
 
   const navigateToWorkout = () => {
-    router.push("/workout/new");
+    router.push("/workouts/new");
   };
 
   const navigateToProgress = () => {
@@ -107,7 +84,7 @@ export default function HomePage() {
 
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "#f8fafc", p: { xs: 2, md: 3 } }}>
-      {/* Header */}
+       
       <Box
         sx={{
           display: "flex",
@@ -118,51 +95,7 @@ export default function HomePage() {
           mx: "auto",
         }}
       >
-        <Typography variant="h4" fontWeight="bold" color="primary">
-          🏋️ Fitness Tracker
-        </Typography>
-
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <Chip
-            icon={<Schedule />}
-            label={`${mockStats.thisWeekWorkouts}/${mockStats.targetWeekly} this week`}
-            color="primary"
-            variant="outlined"
-          />
-          <IconButton onClick={handleProfileMenuOpen}>
-            <Avatar sx={{ width: 40, height: 40 }}>
-              {mockUser.name.charAt(0)}
-            </Avatar>
-          </IconButton>
-        </Box>
-
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleProfileMenuClose}
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-          transformOrigin={{ vertical: "top", horizontal: "right" }}
-        >
-          <MenuItem onClick={navigateToProfile}>
-            <ListItemIcon>
-              <Person fontSize="small" />
-            </ListItemIcon>
-            Profile
-          </MenuItem>
-          <MenuItem onClick={handleProfileMenuClose}>
-            <ListItemIcon>
-              <Settings fontSize="small" />
-            </ListItemIcon>
-            Settings
-          </MenuItem>
-          <Divider />
-          <MenuItem onClick={handleProfileMenuClose}>
-            <ListItemIcon>
-              <ExitToApp fontSize="small" />
-            </ListItemIcon>
-            Logout
-          </MenuItem>
-        </Menu>
+        <Navbar />
       </Box>
 
       <Box sx={{ maxWidth: "1200px", mx: "auto" }}>
