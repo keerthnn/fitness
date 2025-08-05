@@ -81,25 +81,18 @@ export default function Navbar() {
           justifyContent: "space-between",
         }}
       >
-        <Link
-          href="/"
-          style={{
-            textDecoration: "none",
-            color: "inherit",
-            display: "flex",
-            alignItems: "center",
-            gap: "16px",
-            marginRight: "32px",
-          }}
-        >
-          <FitnessCenter style={{ color: "#1976d2", fontSize: 32 }} />
-          <Typography
-            variant="h5"
-            fontWeight="bold"
-            sx={{ display: { xs: "none", sm: "block" } }}
-          >
-            FitTracker
-          </Typography>
+        <Link href="/" style={{ textDecoration: "none", color: "inherit" }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2, mr: 4 }}>
+            <FitnessCenter sx={{ color: "primary.main", fontSize: 32 }} />
+            <Typography
+              variant="h5"
+              component="div"
+              fontWeight="bold"
+              sx={{ display: { xs: "none", sm: "block" } }}
+            >
+              FitTracker
+            </Typography>
+          </Box>
         </Link>
 
         <IconButton onClick={handleDrawerToggle}>
@@ -162,17 +155,19 @@ export default function Navbar() {
           )}
 
           {/* Logo */}
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2, mr: 4 }}>
-            <FitnessCenter sx={{ color: "primary.main", fontSize: 32 }} />
-            <Typography
-              variant="h5"
-              component="div"
-              fontWeight="bold"
-              sx={{ display: { xs: "none", sm: "block" } }}
-            >
-              FitTracker
-            </Typography>
-          </Box>
+          <Link href="/" style={{ textDecoration: "none", color: "inherit" }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2, mr: 4 }}>
+              <FitnessCenter sx={{ color: "primary.main", fontSize: 32 }} />
+              <Typography
+                variant="h5"
+                component="div"
+                fontWeight="bold"
+                sx={{ display: { xs: "none", sm: "block" } }}
+              >
+                FitTracker
+              </Typography>
+            </Box>
+          </Link>
 
           {/* Desktop Navigation */}
           {!isMobile && (
