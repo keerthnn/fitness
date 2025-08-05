@@ -1,577 +1,402 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import Link from 'next/link'
-import { 
-  Box, 
-  Typography, 
-  Card, 
-  CardContent, 
-  Button, 
-  Paper,
-  Grid,
+import React from 'react';
+import {
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  Button,
+  IconButton,
   LinearProgress,
   Avatar,
-  Divider
-} from '@mui/material'
-import { 
-  TrendingUp,
-  TrendingDown,
-  Timeline,
-  FitnessCenter,
-  Scale,
-  StraightenRounded,
-  Add,
-  EmojiEvents,
-  ArrowForward
-} from '@mui/icons-material'
-import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
+} from '@mui/material';
+import {
+  TrendingUp as TrendingUpIcon,
+  FitnessCenter as FitnessCenterIcon,
+  MonitorWeight as WeightIcon,
+  Straighten as MeasurementsIcon,
+  Timeline as TimelineIcon,
+  CalendarToday as CalendarIcon,
+  EmojiEvents as TrophyIcon,
+  ArrowForward as ArrowForwardIcon,
+} from '@mui/icons-material';
+import { useRouter } from 'next/navigation';
 
-interface ProgressData {
-  weight: {
-    current: number
-    change: number
-    goal: number
-    data: Array<{ date: string; weight: number }>
-  }
-  measurements: {
-    chest: { current: number; change: number }
-    waist: { current: number; change: number }
-    arms: { current: number; change: number }
-  }
-  strength: {
-    benchPress: { current: number; change: number }
-    squat: { current: number; change: number }
-    deadlift: { current: number; change: number }
-  }
-  achievements: Array<{
-    id: string
-    title: string
-    description: string
-    date: string
-    type: 'weight' | 'strength' | 'measurement' | 'workout'
-  }>
+interface ProgressCard {
+  title: string;
+  value: string;
+  change: string;
+  changeType: 'positive' | 'negative' | 'neutral';
+  icon: React.ReactNode;
+  route: string;
+  color: string;
 }
 
-export default function ProgressOverviewPage() {
-  const [progressData, setProgressData] = useState<ProgressData | null>(null)
-  const [selectedPeriod, setSelectedPeriod] = useState('30d')
+interface Achievement {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  type: 'weight' | 'strength' | 'consistency' | 'milestone';
+}
 
-  useEffect(() => {
-    // Mock data - replace with actual API call
-    const mockData: ProgressData = {
-      weight: {
-        current: 75.2,
-        change: -2.3,
-        goal: 72.0,
-        data: [
-          { date: '2024-07-01', weight: 77.5 },
-          { date: '2024-07-08', weight: 77.1 },
-          { date: '2024-07-15', weight: 76.8 },
-          { date: '2024-07-22', weight: 76.2 },
-          { date: '2024-07-29', weight: 75.8 },
-          { date: '2024-08-05', weight: 75.2 }
-        ]
-      },
-      measurements: {
-        chest: { current: 102.5, change: 1.5 },
-        waist: { current: 82.0, change: -3.2 },
-        arms: { current: 38.5, change: 0.8 }
-      },
-      strength: {
-        benchPress: { current: 85, change: 5 },
-        squat: { current: 120, change: 10 },
-        deadlift: { current: 140, change: 15 }
-      },
-      achievements: [
-        {
-          id: '1',
-          title: 'New Deadlift PR!',
-          description: 'Achieved 140kg deadlift - 15kg improvement',
-          date: '2024-08-03',
-          type: 'strength'
-        },
-        {
-          id: '2',
-          title: 'Weight Goal Milestone',
-          description: 'Lost 2kg this month - 73% to goal',
-          date: '2024-08-01',
-          type: 'weight'
-        },
-        {
-          id: '3',
-          title: 'Consistency Champion',
-          description: 'Completed 4 weeks of consistent training',
-          date: '2024-07-28',
-          type: 'workout'
-        }
-      ]
+const ProgressOverviewPage = () => {
+  const router = useRouter();
+
+  const progressCards: ProgressCard[] = [
+    {
+      title: 'Current Weight',
+      value: '175.2 lbs',
+      change: '-2.3 lbs this month',
+      changeType: 'positive',
+      icon: <WeightIcon />,
+      route: '/progress/weight',
+      color: '#2196F3'
+    },
+    {
+      title: 'Body Fat',
+      value: '15.2%',
+      change: '-1.1% this month',
+      changeType: 'positive',
+      icon: <MeasurementsIcon />,
+      route: '/progress/measurements',
+      color: '#4CAF50'
+    },
+    {
+      title: 'Bench Press PR',
+      value: '225 lbs',
+      change: '+15 lbs this month',
+      changeType: 'positive',
+      icon: <FitnessCenterIcon />,
+      route: '/progress/strength',
+      color: '#FF9800'
+    },
+    {
+      title: 'Workout Streak',
+      value: '12 days',
+      change: 'Current streak',
+      changeType: 'neutral',
+      icon: <TimelineIcon />,
+      route: '/workouts',
+      color: '#9C27B0'
     }
-    
-    setProgressData(mockData)
-  }, [])
+  ];
 
-  const getChangeIcon = (change: number) => {
-    return change > 0 ? <TrendingUp color="success" /> : <TrendingDown color="error" />
-  }
-
-  const getChangeColor = (change: number, inverse = false) => {
-    if (inverse) {
-      return change < 0 ? 'success.main' : 'error.main'
+  const recentAchievements: Achievement[] = [
+    {
+      id: '1',
+      title: 'New Bench Press PR!',
+      description: 'Hit 225 lbs for the first time',
+      date: '2024-08-03',
+      type: 'strength'
+    },
+    {
+      id: '2',
+      title: '10-Day Streak',
+      description: 'Completed 10 consecutive workout days',
+      date: '2024-08-01',
+      type: 'consistency'
+    },
+    {
+      id: '3',
+      title: 'Goal Weight Reached',
+      description: 'Successfully reached target weight of 175 lbs',
+      date: '2024-07-28',
+      type: 'weight'
+    },
+    {
+      id: '4',
+      title: 'Body Fat Milestone',
+      description: 'Achieved sub-16% body fat percentage',
+      date: '2024-07-25',
+      type: 'milestone'
     }
-    return change > 0 ? 'success.main' : 'error.main'
-  }
-
-  const formatChange = (change: number, unit: string) => {
-    const sign = change > 0 ? '+' : ''
-    return `${sign}${change}${unit}`
-  }
+  ];
 
   const getAchievementIcon = (type: string) => {
     switch (type) {
-      case 'strength': return <FitnessCenter />
-      case 'weight': return <Scale />
-      case 'measurement': return <StraightenRounded />
-      case 'workout': return <EmojiEvents />
-      default: return <EmojiEvents />
+      case 'strength': return <FitnessCenterIcon />;
+      case 'weight': return <WeightIcon />;
+      case 'consistency': return <TimelineIcon />;
+      case 'milestone': return <TrophyIcon />;
+      default: return <TrophyIcon />;
     }
-  }
+  };
 
-  if (!progressData) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
-        <LinearProgress sx={{ width: 200 }} />
-      </Box>
-    )
-  }
+  const getAchievementColor = (type: string) => {
+    switch (type) {
+      case 'strength': return '#FF9800';
+      case 'weight': return '#2196F3';
+      case 'consistency': return '#9C27B0';
+      case 'milestone': return '#4CAF50';
+      default: return '#757575';
+    }
+  };
 
-  const weightProgress = ((progressData.weight.current - 77.5) / (progressData.weight.goal - 77.5)) * 100
+  const getChangeColor = (changeType: string) => {
+    switch (changeType) {
+      case 'positive': return 'success.main';
+      case 'negative': return 'error.main';
+      default: return 'text.secondary';
+    }
+  };
 
   return (
-    <Box sx={{ p: 3, minHeight: '100vh', bgcolor: 'background.default' }}>
-      <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
-        {/* Header */}
-        <Paper sx={{ p: 4, mb: 4, bgcolor: 'primary.main', color: 'primary.contrastText' }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Box>
-              <Typography variant="h4" fontWeight="bold" gutterBottom>
-                Progress Overview
+    <Box sx={{ p: 3, maxWidth: 1200, mx: 'auto' }}>
+      {/* Header */}
+      <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <TrendingUpIcon sx={{ fontSize: 32, color: 'primary.main' }} />
+          <Typography variant="h4" component="h1" fontWeight="bold">
+            Progress Overview
+          </Typography>
+        </Box>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <CalendarIcon sx={{ color: 'text.secondary' }} />
+          <Typography variant="body2" color="text.secondary">
+            Last updated: Today
+          </Typography>
+        </Box>
+      </Box>
+
+      {/* Quick Stats Cards */}
+      <Box sx={{ 
+        display: 'flex', 
+        flexDirection: { xs: 'column', md: 'row' },
+        gap: 3, 
+        mb: 4 
+      }}>
+        {progressCards.map((card, index) => (
+          <Card 
+            key={index}
+            sx={{ 
+              flex: 1,
+              cursor: 'pointer',
+              transition: 'all 0.2s ease-in-out',
+              '&:hover': {
+                transform: 'translateY(-4px)',
+                boxShadow: 6,
+              },
+              background: `linear-gradient(135deg, ${card.color}15 0%, ${card.color}05 100%)`,
+              border: `1px solid ${card.color}30`
+            }}
+            onClick={() => router.push(card.route)}
+          >
+            <CardContent>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                <Box sx={{ 
+                  p: 1.5, 
+                  borderRadius: 2, 
+                  backgroundColor: card.color,
+                  color: 'white',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  {card.icon}
+                </Box>
+                <IconButton size="small" sx={{ color: card.color }}>
+                  <ArrowForwardIcon />
+                </IconButton>
+              </Box>
+              
+              <Typography variant="h4" fontWeight="bold" sx={{ mb: 0.5, color: card.color }}>
+                {card.value}
               </Typography>
-              <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                Track your fitness journey and celebrate achievements
+              
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                {card.title}
               </Typography>
-            </Box>
-            <Box sx={{ display: 'flex', gap: 1 }}>
-              {['7d', '30d', '90d', '1y'].map((period) => (
-                <Button
-                  key={period}
-                  variant={selectedPeriod === period ? 'contained' : 'outlined'}
-                  color="inherit"
-                  size="small"
-                  onClick={() => setSelectedPeriod(period)}
+              
+              <Typography 
+                variant="caption" 
+                sx={{ 
+                  color: getChangeColor(card.changeType),
+                  fontWeight: 500 
+                }}
+              >
+                {card.change}
+              </Typography>
+            </CardContent>
+          </Card>
+        ))}
+      </Box>
+
+      {/* Recent Achievements */}
+      <Card sx={{ mb: 4 }}>
+        <CardContent>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+            <Typography variant="h6" fontWeight="bold">
+              Recent Achievements
+            </Typography>
+            <Button 
+              variant="outlined" 
+              size="small"
+              onClick={() => router.push('/achievements')}
+            >
+              View All
+            </Button>
+          </Box>
+          
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {recentAchievements.map((achievement) => (
+              <Box 
+                key={achievement.id}
+                sx={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: 2,
+                  p: 2,
+                  borderRadius: 2,
+                  backgroundColor: 'grey.50',
+                  border: '1px solid',
+                  borderColor: 'grey.200',
+                  transition: 'all 0.2s ease-in-out',
+                  '&:hover': {
+                    backgroundColor: 'grey.100',
+                    transform: 'translateX(4px)'
+                  }
+                }}
+              >
+                <Avatar 
                   sx={{ 
-                    bgcolor: selectedPeriod === period ? 'rgba(255,255,255,0.2)' : 'transparent',
-                    borderColor: 'rgba(255,255,255,0.3)'
+                    backgroundColor: getAchievementColor(achievement.type),
+                    width: 48,
+                    height: 48
                   }}
                 >
-                  {period}
-                </Button>
-              ))}
+                  {getAchievementIcon(achievement.type)}
+                </Avatar>
+                
+                <Box sx={{ flex: 1 }}>
+                  <Typography variant="subtitle1" fontWeight="bold">
+                    {achievement.title}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {achievement.description}
+                  </Typography>
+                </Box>
+                
+                <Typography variant="caption" color="text.secondary">
+                  {new Date(achievement.date).toLocaleDateString()}
+                </Typography>
+              </Box>
+            ))}
+          </Box>
+        </CardContent>
+      </Card>
+
+      {/* Quick Actions */}
+      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2 }}>
+        <Card sx={{ flex: 1, cursor: 'pointer' }} onClick={() => router.push('/progress/weight')}>
+          <CardContent sx={{ textAlign: 'center', py: 3 }}>
+            <WeightIcon sx={{ fontSize: 48, color: 'primary.main', mb: 2 }} />
+            <Typography variant="h6" fontWeight="bold" gutterBottom>
+              Log Weight
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Track your weight progress
+            </Typography>
+          </CardContent>
+        </Card>
+
+        <Card sx={{ flex: 1, cursor: 'pointer' }} onClick={() => router.push('/progress/measurements')}>
+          <CardContent sx={{ textAlign: 'center', py: 3 }}>
+            <MeasurementsIcon sx={{ fontSize: 48, color: 'success.main', mb: 2 }} />
+            <Typography variant="h6" fontWeight="bold" gutterBottom>
+              Body Measurements
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Track body measurements
+            </Typography>
+          </CardContent>
+        </Card>
+
+        <Card sx={{ flex: 1, cursor: 'pointer' }} onClick={() => router.push('/progress/strength')}>
+          <CardContent sx={{ textAlign: 'center', py: 3 }}>
+            <FitnessCenterIcon sx={{ fontSize: 48, color: 'warning.main', mb: 2 }} />
+            <Typography variant="h6" fontWeight="bold" gutterBottom>
+              Strength Progress
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              View strength gains
+            </Typography>
+          </CardContent>
+        </Card>
+      </Box>
+
+      {/* Current Goals Progress */}
+      <Card sx={{ mt: 4 }}>
+        <CardContent>
+          <Typography variant="h6" fontWeight="bold" gutterBottom>
+            Current Goals
+          </Typography>
+          
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            <Box>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                <Typography variant="body1" fontWeight="medium">
+                  Reach 170 lbs
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  75% complete
+                </Typography>
+              </Box>
+              <LinearProgress 
+                variant="determinate" 
+                value={75} 
+                sx={{ height: 8, borderRadius: 4 }}
+              />
+              <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
+                5.2 lbs to go
+              </Typography>
+            </Box>
+
+            <Box>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                <Typography variant="body1" fontWeight="medium">
+                  Bench Press 250 lbs
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  90% complete
+                </Typography>
+              </Box>
+              <LinearProgress 
+                variant="determinate" 
+                value={90} 
+                sx={{ height: 8, borderRadius: 4 }}
+                color="warning"
+              />
+              <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
+                25 lbs to go
+              </Typography>
+            </Box>
+
+            <Box>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                <Typography variant="body1" fontWeight="medium">
+                  30-Day Workout Streak
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  40% complete
+                </Typography>
+              </Box>
+              <LinearProgress 
+                variant="determinate" 
+                value={40} 
+                sx={{ height: 8, borderRadius: 4 }}
+                color="secondary"
+              />
+              <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
+                18 days to go
+              </Typography>
             </Box>
           </Box>
-        </Paper>
-
-        <Grid container spacing={3}>
-          {/* Quick Stats */}
-          <Grid item xs={12} md={8}>
-            <Grid container spacing={2}>
-              {/* Weight Card */}
-              <Grid item xs={12} sm={6} md={4}>
-                <Card sx={{ height: '100%' }}>
-                  <CardContent sx={{ p: 3 }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                      <Box>
-                        <Typography variant="h4" fontWeight="bold">
-                          {progressData.weight.current}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          kg
-                        </Typography>
-                      </Box>
-                      <Scale color="primary" />
-                    </Box>
-                    
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                      {getChangeIcon(progressData.weight.change)}
-                      <Typography 
-                        variant="body2" 
-                        sx={{ color: getChangeColor(progressData.weight.change, true) }}
-                      >
-                        {formatChange(progressData.weight.change, 'kg')} this month
-                      </Typography>
-                    </Box>
-
-                    <Box sx={{ mb: 2 }}>
-                      <Typography variant="body2" color="text.secondary" gutterBottom>
-                        Goal: {progressData.weight.goal}kg
-                      </Typography>
-                      <LinearProgress 
-                        variant="determinate" 
-                        value={Math.abs(weightProgress)} 
-                        sx={{ height: 6, borderRadius: 3 }}
-                      />
-                      <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
-                        {Math.round(Math.abs(weightProgress))}% to goal
-                      </Typography>
-                    </Box>
-
-                    <Button
-                      component={Link}
-                      href="/progress/weight"
-                      variant="outlined"
-                      size="small"
-                      endIcon={<ArrowForward />}
-                      fullWidth
-                    >
-                      View Details
-                    </Button>
-                  </CardContent>
-                </Card>
-              </Grid>
-
-              {/* Strength Card */}
-              <Grid item xs={12} sm={6} md={4}>
-                <Card sx={{ height: '100%' }}>
-                  <CardContent sx={{ p: 3 }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                      <Box>
-                        <Typography variant="h6" fontWeight="bold">
-                          Strength
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          Personal Records
-                        </Typography>
-                      </Box>
-                      <FitnessCenter color="primary" />
-                    </Box>
-                    
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Typography variant="body2" color="text.secondary">Bench</Typography>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <Typography variant="body2" fontWeight="medium">
-                            {progressData.strength.benchPress.current}kg
-                          </Typography>
-                          <Typography 
-                            variant="caption" 
-                            sx={{ color: getChangeColor(progressData.strength.benchPress.change) }}
-                          >
-                            {formatChange(progressData.strength.benchPress.change, '')}
-                          </Typography>
-                        </Box>
-                      </Box>
-                      
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Typography variant="body2" color="text.secondary">Squat</Typography>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <Typography variant="body2" fontWeight="medium">
-                            {progressData.strength.squat.current}kg
-                          </Typography>
-                          <Typography 
-                            variant="caption" 
-                            sx={{ color: getChangeColor(progressData.strength.squat.change) }}
-                          >
-                            {formatChange(progressData.strength.squat.change, '')}
-                          </Typography>
-                        </Box>
-                      </Box>
-                      
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Typography variant="body2" color="text.secondary">Deadlift</Typography>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <Typography variant="body2" fontWeight="medium">
-                            {progressData.strength.deadlift.current}kg
-                          </Typography>
-                          <Typography 
-                            variant="caption" 
-                            sx={{ color: getChangeColor(progressData.strength.deadlift.change) }}
-                          >
-                            {formatChange(progressData.strength.deadlift.change, '')}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </Box>
-
-                    <Button
-                      component={Link}
-                      href="/progress/strength"
-                      variant="outlined"
-                      size="small"
-                      endIcon={<ArrowForward />}
-                      fullWidth
-                    >
-                      View Details
-                    </Button>
-                  </CardContent>
-                </Card>
-              </Grid>
-
-              {/* Measurements Card */}
-              <Grid item xs={12} sm={6} md={4}>
-                <Card sx={{ height: '100%' }}>
-                  <CardContent sx={{ p: 3 }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                      <Box>
-                        <Typography variant="h6" fontWeight="bold">
-                          Measurements
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          Body composition
-                        </Typography>
-                      </Box>
-                      <StraightenRounded color="primary" />
-                    </Box>
-                    
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Typography variant="body2" color="text.secondary">Chest</Typography>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <Typography variant="body2" fontWeight="medium">
-                            {progressData.measurements.chest.current}cm
-                          </Typography>
-                          <Typography 
-                            variant="caption" 
-                            sx={{ color: getChangeColor(progressData.measurements.chest.change) }}
-                          >
-                            {formatChange(progressData.measurements.chest.change, '')}
-                          </Typography>
-                        </Box>
-                      </Box>
-                      
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Typography variant="body2" color="text.secondary">Waist</Typography>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <Typography variant="body2" fontWeight="medium">
-                            {progressData.measurements.waist.current}cm
-                          </Typography>
-                          <Typography 
-                            variant="caption" 
-                            sx={{ color: getChangeColor(progressData.measurements.waist.change, true) }}
-                          >
-                            {formatChange(progressData.measurements.waist.change, '')}
-                          </Typography>
-                        </Box>
-                      </Box>
-                      
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Typography variant="body2" color="text.secondary">Arms</Typography>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <Typography variant="body2" fontWeight="medium">
-                            {progressData.measurements.arms.current}cm
-                          </Typography>
-                          <Typography 
-                            variant="caption" 
-                            sx={{ color: getChangeColor(progressData.measurements.arms.change) }}
-                          >
-                            {formatChange(progressData.measurements.arms.change, '')}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </Box>
-
-                    <Button
-                      component={Link}
-                      href="/progress/measurements"
-                      variant="outlined"
-                      size="small"
-                      endIcon={<ArrowForward />}
-                      fullWidth
-                    >
-                      View Details
-                    </Button>
-                  </CardContent>
-                </Card>
-              </Grid>
-            </Grid>
-          </Grid>
-
-          {/* Recent Achievements */}
-          <Grid item xs={12} md={4}>
-            <Card sx={{ height: '100%' }}>
-              <CardContent sx={{ p: 3 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                  <Typography variant="h6" fontWeight="bold">
-                    Recent Achievements
-                  </Typography>
-                  <EmojiEvents color="primary" />
-                </Box>
-                
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  {progressData.achievements.map((achievement) => (
-                    <Box key={achievement.id} sx={{ display: 'flex', gap: 2 }}>
-                      <Avatar sx={{ bgcolor: 'primary.main', width: 40, height: 40 }}>
-                        {getAchievementIcon(achievement.type)}
-                      </Avatar>
-                      <Box sx={{ flex: 1 }}>
-                        <Typography variant="body2" fontWeight="medium">
-                          {achievement.title}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
-                          {achievement.description}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {new Date(achievement.date).toLocaleDateString()}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  ))}
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-
-          {/* Weight Trend Chart */}
-          <Grid item xs={12}>
-            <Card>
-              <CardContent sx={{ p: 3 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                  <Typography variant="h6" fontWeight="bold">
-                    Weight Trend
-                  </Typography>
-                  <Button
-                    component={Link}
-                    href="/progress/weight"
-                    variant="outlined"
-                    size="small"
-                    endIcon={<ArrowForward />}
-                  >
-                    View All Data
-                  </Button>
-                </Box>
-                
-                <Box sx={{ height: 300 }}>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={progressData.weight.data}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis 
-                        dataKey="date" 
-                        tickFormatter={(value) => new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                      />
-                      <YAxis domain={['dataMin - 1', 'dataMax + 1']} />
-                      <Tooltip 
-                        labelFormatter={(value) => new Date(value).toLocaleDateString()}
-                        formatter={(value: number) => [`${value} kg`, 'Weight']}
-                      />
-                      <Area 
-                        type="monotone" 
-                        dataKey="weight" 
-                        stroke="#1976d2" 
-                        fill="#1976d2" 
-                        fillOpacity={0.1}
-                        strokeWidth={2}
-                      />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-
-          {/* Quick Actions */}
-          <Grid item xs={12}>
-            <Card>
-              <CardContent sx={{ p: 3 }}>
-                <Typography variant="h6" fontWeight="bold" gutterBottom>
-                  Quick Actions
-                </Typography>
-                <Divider sx={{ mb: 3 }} />
-                
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Button
-                      component={Link}
-                      href="/progress/weight"
-                      variant="outlined"
-                      fullWidth
-                      startIcon={<Add />}
-                      sx={{ p: 2, height: 80 }}
-                    >
-                      <Box sx={{ textAlign: 'center' }}>
-                        <Typography variant="body2" fontWeight="medium">
-                          Log Weight
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          Track your weight
-                        </Typography>
-                      </Box>
-                    </Button>
-                  </Grid>
-
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Button
-                      component={Link}
-                      href="/progress/measurements"
-                      variant="outlined"
-                      fullWidth
-                      startIcon={<Add />}
-                      sx={{ p: 2, height: 80 }}
-                    >
-                      <Box sx={{ textAlign: 'center' }}>
-                        <Typography variant="body2" fontWeight="medium">
-                          Add Measurements
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          Body measurements
-                        </Typography>
-                      </Box>
-                    </Button>
-                  </Grid>
-
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Button
-                      component={Link}
-                      href="/progress/strength"
-                      variant="outlined"
-                      fullWidth
-                      startIcon={<Add />}
-                      sx={{ p: 2, height: 80 }}
-                    >
-                      <Box sx={{ textAlign: 'center' }}>
-                        <Typography variant="body2" fontWeight="medium">
-                          Log Strength
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          Personal records
-                        </Typography>
-                      </Box>
-                    </Button>
-                  </Grid>
-
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Button
-                      component={Link}
-                      href="/workouts"
-                      variant="outlined"
-                      fullWidth
-                      startIcon={<Timeline />}
-                      sx={{ p: 2, height: 80 }}
-                    >
-                      <Box sx={{ textAlign: 'center' }}>
-                        <Typography variant="body2" fontWeight="medium">
-                          View Reports
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          Detailed analytics
-                        </Typography>
-                      </Box>
-                    </Button>
-                  </Grid>
-                </Grid>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-      </Box>
+        </CardContent>
+      </Card>
     </Box>
-  )
-}
+  );
+};
+
+export default ProgressOverviewPage;
