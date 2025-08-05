@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import {
   AppBar,
@@ -45,6 +45,7 @@ export default function Navbar() {
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [user, setUser] = useState<{ id: string; email: string } | null>(null);
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -57,6 +58,17 @@ export default function Navbar() {
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
+
+  useEffect(() => {
+    const stored = localStorage.getItem("user");
+    if (stored) {
+      try {
+        setUser(JSON.parse(stored));
+      } catch (err) {
+        console.error("Failed to parse user from localStorage");
+      }
+    }
+  }, []);
 
   const navigationItems = [
     { text: "Dashboard", href: "/dashboard", icon: <Dashboard /> },
@@ -270,7 +282,7 @@ export default function Navbar() {
             Signed in as
           </Typography>
           <Typography variant="body2" fontWeight="bold">
-            John Doe
+            {user?.email || "Guest"}
           </Typography>
         </Box>
 

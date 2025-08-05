@@ -1,3 +1,7 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Box,
   Typography,
@@ -8,23 +12,114 @@ import {
   Chip,
   Paper,
   Avatar,
+  CircularProgress,
+  Alert,
 } from "@mui/material";
 import { Edit, Person, FitnessCenter, Timeline } from "@mui/icons-material";
 import Link from "next/link";
 import Navbar from "../components/layout/Navbar";
 
+interface UserProfile {
+  id: string;
+  name: string | null;
+  email: string;
+  age: number | null;
+  height: string | null;
+  currentWeight: number | null;
+  goalWeight: number | null;
+  fitnessLevel: string | null;
+  bodyFatPct: number | null;
+  memberSince: string;
+  totalWorkouts: number;
+  progressPercentage: number;
+  weightHistory: Array<{
+    date: string;
+    weightKg: number;
+    weightLbs: number;
+    bodyFatPct: number | null;
+  }>;
+}
+
 export default function ProfilePage() {
-  const user = {
-    name: "John Doe",
-    email: "john.doe@example.com",
-    age: 28,
-    height: "5'10\"",
-    currentWeight: 165,
-    goalWeight: 155,
-    fitnessLevel: "Intermediate",
-    memberSince: "January 2024",
-    totalWorkouts: 24,
+  const router = useRouter();
+  const [user, setUser] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  const fetchProfile = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        router.push('/profile/login');
+        return;
+      }
+
+      const response = await fetch('/api/profile', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          localStorage.removeItem('token');
+          router.push('/profile/login');
+          return;
+        }
+        throw new Error('Failed to fetch profile');
+      }
+
+      const profileData = await response.json();
+      setUser(profileData);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
   };
+
+  if (loading) {
+    return (
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        minHeight: '100vh' 
+      }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert severity="error">{error}</Alert>
+      </Box>
+    );
+  }
+
+  if (!user) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert severity="warning">No user data found</Alert>
+      </Box>
+    );
+  }
+
+  // This function is no longer needed since we get progress from API
+  // const calculateProgress = () => {
+  //   if (!user.currentWeight || !user.goalWeight) return 0;
+  //   const totalToLose = user.currentWeight - user.goalWeight;
+  //   const currentLoss = Math.max(0, user.currentWeight - user.goalWeight);
+  //   return Math.min(100, Math.round((currentLoss / totalToLose) * 100));
+  // };
 
   return (
     <Box sx={{ p: 3, minHeight: "100vh", bgcolor: "background.default" }}>
@@ -63,7 +158,7 @@ export default function ProfilePage() {
                 </Avatar>
                 <Box>
                   <Typography variant="h3" fontWeight="bold" gutterBottom>
-                    {user.name}
+                    {user.name || user.email.split('@')[0]}
                   </Typography>
                   <Typography variant="h6" sx={{ opacity: 0.9 }}>
                     {user.email}
@@ -87,7 +182,7 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
 
-        {/* Replace Grid with Flex Box layout */}
+        {/* Personal Info and Fitness Stats */}
         <Box
           sx={{
             display: "flex",
@@ -107,10 +202,11 @@ export default function ProfilePage() {
 
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                   {[
-                    ["Age", `${user.age} years`],
-                    ["Height", user.height],
-                    ["Current Weight", `${user.currentWeight} lbs`],
-                    ["Goal Weight", `${user.goalWeight} lbs`],
+                    ["Age", user.age ? `${user.age} years` : 'Not set'],
+                    ["Height", user.height || 'Not set'],
+                    ["Current Weight", user.currentWeight ? `${user.currentWeight} lbs` : 'Not set'],
+                    ["Body Fat %", user.bodyFatPct ? `${user.bodyFatPct}%` : 'Not set'],
+                    ["Goal Weight", user.goalWeight ? `${user.goalWeight} lbs` : 'Not set'],
                   ].map(([label, value]) => (
                     <Box
                       key={label}
@@ -131,7 +227,7 @@ export default function ProfilePage() {
                       Fitness Level:
                     </Typography>
                     <Chip
-                      label={user.fitnessLevel}
+                      label={user.fitnessLevel || 'Not set'}
                       color="primary"
                       variant="outlined"
                     />
@@ -175,22 +271,43 @@ export default function ProfilePage() {
                     </Box>
                   </Paper>
 
-                  <Paper
-                    sx={{
-                      p: 2,
-                      bgcolor: "success.light",
-                      color: "success.contrastText",
-                    }}
-                  >
-                    <Box
-                      sx={{ display: "flex", justifyContent: "space-between" }}
+                  {user.currentWeight && user.goalWeight && (
+                    <Paper
+                      sx={{
+                        p: 2,
+                        bgcolor: "success.light",
+                        color: "success.contrastText",
+                      }}
                     >
-                      <Typography>Weight to Lose</Typography>
-                      <Typography variant="h4" fontWeight="bold">
-                        {user.currentWeight - user.goalWeight} lbs
-                      </Typography>
-                    </Box>
-                  </Paper>
+                      <Box
+                        sx={{ display: "flex", justifyContent: "space-between" }}
+                      >
+                        <Typography>Weight to Lose</Typography>
+                        <Typography variant="h4" fontWeight="bold">
+                          {Math.max(0, user.currentWeight - user.goalWeight)} lbs
+                        </Typography>
+                      </Box>
+                    </Paper>
+                  )}
+
+                  {user.bodyFatPct && (
+                    <Paper
+                      sx={{
+                        p: 2,
+                        bgcolor: "info.light",
+                        color: "info.contrastText",
+                      }}
+                    >
+                      <Box
+                        sx={{ display: "flex", justifyContent: "space-between" }}
+                      >
+                        <Typography>Body Fat</Typography>
+                        <Typography variant="h4" fontWeight="bold">
+                          {user.bodyFatPct}%
+                        </Typography>
+                      </Box>
+                    </Paper>
+                  )}
 
                   <Paper
                     sx={{
@@ -211,7 +328,7 @@ export default function ProfilePage() {
                         <Typography>Progress</Typography>
                       </Box>
                       <Typography variant="h4" fontWeight="bold">
-                        75%
+                        {user.progressPercentage}%
                       </Typography>
                     </Box>
                   </Paper>
@@ -237,42 +354,58 @@ export default function ProfilePage() {
                   gap: 3,
                 }}
               >
-                {[
-                  {
-                    title: "Weight Loss",
-                    description: "Lose 10 lbs by June",
-                    color: "info.light",
-                    text: "info.contrastText",
-                  },
-                  {
-                    title: "Strength",
-                    description: "Bench press 200 lbs",
-                    color: "success.light",
-                    text: "success.contrastText",
-                  },
-                  {
-                    title: "Endurance",
-                    description: "Run 5K under 25 min",
-                    color: "warning.light",
-                    text: "warning.contrastText",
-                  },
-                ].map((goal) => (
+                {user.goalWeight && user.currentWeight && (
                   <Paper
-                    key={goal.title}
                     sx={{
                       p: 3,
                       flex: "1 1 250px",
-                      bgcolor: goal.color,
-                      color: goal.text,
+                      bgcolor: "info.light",
+                      color: "info.contrastText",
                       textAlign: "center",
                     }}
                   >
                     <Typography variant="h6" fontWeight="bold" gutterBottom>
-                      {goal.title}
+                      Weight Loss
                     </Typography>
-                    <Typography variant="body2">{goal.description}</Typography>
+                    <Typography variant="body2">
+                      Reach {user.goalWeight} lbs
+                    </Typography>
                   </Paper>
-                ))}
+                )}
+                
+                <Paper
+                  sx={{
+                    p: 3,
+                    flex: "1 1 250px",
+                    bgcolor: "success.light",
+                    color: "success.contrastText",
+                    textAlign: "center",
+                  }}
+                >
+                  <Typography variant="h6" fontWeight="bold" gutterBottom>
+                    Strength
+                  </Typography>
+                  <Typography variant="body2">
+                    Build muscle and strength
+                  </Typography>
+                </Paper>
+                
+                <Paper
+                  sx={{
+                    p: 3,
+                    flex: "1 1 250px",
+                    bgcolor: "warning.light",
+                    color: "warning.contrastText",
+                    textAlign: "center",
+                  }}
+                >
+                  <Typography variant="h6" fontWeight="bold" gutterBottom>
+                    Endurance
+                  </Typography>
+                  <Typography variant="body2">
+                    Improve cardiovascular health
+                  </Typography>
+                </Paper>
               </Box>
             </CardContent>
           </Card>
