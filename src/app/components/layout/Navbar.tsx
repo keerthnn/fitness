@@ -60,15 +60,24 @@ export default function Navbar() {
   };
 
   useEffect(() => {
-    const stored = localStorage.getItem("user");
-    if (stored) {
-      try {
-        setUser(JSON.parse(stored));
-      } catch (err) {
-        console.error("Failed to parse user from localStorage");
-      }
+  const fetchUser = async () => {
+    const userId = localStorage.getItem("userId");
+    if (!userId) return;
+
+    try {
+      const res = await fetch(`/api/users/${userId}`);
+      if (!res.ok) throw new Error("Failed to fetch user");
+
+      const userData = await res.json();
+      setUser(userData); // sets email and id
+    } catch (err) {
+      console.error("Error loading user:", err);
     }
-  }, []);
+  };
+
+  fetchUser();
+}, []);
+
 
   const navigationItems = [
     { text: "Dashboard", href: "/dashboard", icon: <Dashboard /> },
@@ -282,7 +291,7 @@ export default function Navbar() {
             Signed in as
           </Typography>
           <Typography variant="body2" fontWeight="bold">
-            {user?.email || "Guest"}
+            {user?.email || "Loading"}
           </Typography>
         </Box>
 
