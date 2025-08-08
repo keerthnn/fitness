@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Box,
@@ -20,21 +20,56 @@ import Navbar from "fitness/app/components/layout/Navbar";
 
 export default function EditProfilePage() {
   const router = useRouter();
-
-  // In a real app, you'd fetch current user data
   const [formData, setFormData] = useState({
-    name: "John Doe",
-    email: "john.doe@example.com",
-    age: 28,
-    height: "5'10",
-    currentWeight: 165,
-    goalWeight: 155,
-    fitnessLevel: "Intermediate",
+    name: "",
+    email: "",
+    age: 0,
+    height: "",
+    currWeight: 0,
+    goalWeight: 0,
+    fitnessLevel: "",
   });
-
   const [isLoading, setIsLoading] = useState(false);
+  const [token, setToken] = useState<string | null>(null);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token");
+    setToken(storedToken);
+  }, []);
+
+  useEffect(() => {
+    if (!token) return;
+    const fetchUser = async () => {
+      try {
+        const res = await fetch(`/api/profile`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (!res.ok) throw new Error("Failed to load user data");
+        const data = await res.json();
+
+        setFormData({
+          name: data.name || "",
+          email: data.email || "",
+          age: data.age || 0,
+          height: data.height || "",
+          currWeight: data.currWeight || 0,
+          goalWeight: data.goalWeight || 0,
+          fitnessLevel: data.fitnessLevel || "",
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchUser();
+  }, [token]);
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -47,13 +82,20 @@ export default function EditProfilePage() {
     setIsLoading(true);
 
     try {
-      // In a real app, you'd make an API call here
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
+      const res = await fetch(`/api/profile`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      });
+      console.log({ res });
+      if (!res.ok) throw new Error("Failed to update profile");
 
-      // Redirect back to profile page
       router.push("/profile");
-    } catch (error) {
-      console.error("Error updating profile:", error);
+    } catch (err) {
+      console.error(err);
     } finally {
       setIsLoading(false);
     }
@@ -110,10 +152,8 @@ export default function EditProfilePage() {
             </Box>
           </Paper>
 
-          {/* Form */}
           <CardContent sx={{ p: 4 }}>
             <Box component="form" onSubmit={handleSubmit}>
-              {/* Basic Information */}
               <Typography variant="h6" fontWeight="bold" gutterBottom>
                 Basic Information
               </Typography>
@@ -146,7 +186,6 @@ export default function EditProfilePage() {
                 </Box>
               </Box>
 
-              {/* Physical Information */}
               <Typography variant="h6" fontWeight="bold" gutterBottom>
                 Physical Information
               </Typography>
@@ -200,7 +239,6 @@ export default function EditProfilePage() {
                 </Box>
               </Box>
 
-              {/* Weight Information */}
               <Typography variant="h6" fontWeight="bold" gutterBottom>
                 Weight Goals
               </Typography>
@@ -210,10 +248,10 @@ export default function EditProfilePage() {
                 <Box sx={{ flex: { xs: "1 1 100%", md: "1 1 48%" } }}>
                   <TextField
                     fullWidth
-                    label="Current Weight (lbs)"
-                    name="currentWeight"
+                    label="Current Weight (KG)"
+                    name="currWeight"
                     type="number"
-                    value={formData.currentWeight}
+                    value={formData.currWeight}
                     onChange={handleInputChange}
                     required
                     inputProps={{ min: 50, max: 500 }}
@@ -224,7 +262,7 @@ export default function EditProfilePage() {
                 <Box sx={{ flex: { xs: "1 1 100%", md: "1 1 48%" } }}>
                   <TextField
                     fullWidth
-                    label="Goal Weight (lbs)"
+                    label="Goal Weight (KG)"
                     name="goalWeight"
                     type="number"
                     value={formData.goalWeight}
@@ -236,7 +274,6 @@ export default function EditProfilePage() {
                 </Box>
               </Box>
 
-              {/* Submit Buttons */}
               <Box
                 sx={{
                   display: "flex",

@@ -7,6 +7,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     select: {
       id: true,
       email: true,
+      name: true,
       createdAt: true,
       workouts: true,
       bodyMetrics: true,

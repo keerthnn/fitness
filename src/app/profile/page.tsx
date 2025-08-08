@@ -1,7 +1,6 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -20,78 +19,64 @@ import Link from "next/link";
 import Navbar from "../components/layout/Navbar";
 
 interface UserProfile {
-  id: string;
   name: string | null;
   email: string;
   age: number | null;
-  height: string | null;
-  currentWeight: number | null;
+  height: number | null;
+  currWeight: number | null;
   goalWeight: number | null;
   fitnessLevel: string | null;
-  bodyFatPct: number | null;
-  memberSince: string;
-  totalWorkouts: number;
-  progressPercentage: number;
-  weightHistory: Array<{
-    date: string;
-    weightKg: number;
-    weightLbs: number;
-    bodyFatPct: number | null;
-  }>;
 }
 
 export default function ProfilePage() {
-  const router = useRouter();
-  const [user, setUser] = useState<UserProfile | null>(null);
+  const [user, setUser] = useState<UserProfile>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchProfile();
+    const fetchUser = async () => {
+      setLoading(true);
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch(`/api/profile`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (!res.ok) throw new Error("Failed to load user data");
+        const data = await res.json();
+
+        setUser({
+          name: data.name || "",
+          email: data.email || "",
+          age: data.age || 0,
+          height: data.height?.toString() || "",
+          currWeight: data.currWeight || 0,
+          goalWeight: data.goalWeight || 0,
+          fitnessLevel: data.fitnessLevel || "",
+        });
+      } catch (err) {
+        console.error(err);
+        setError("Unable to load user profile");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
   }, []);
-
-  const fetchProfile = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      
-      if (!token) {
-        router.push('/profile/login');
-        return;
-      }
-
-      const response = await fetch('/api/profile', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          localStorage.removeItem('token');
-          router.push('/profile/login');
-          return;
-        }
-        throw new Error('Failed to fetch profile');
-      }
-
-      const profileData = await response.json();
-      setUser(profileData);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   if (loading) {
     return (
-      <Box sx={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        minHeight: '100vh' 
-      }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100vh",
+        }}
+      >
         <CircularProgress />
       </Box>
     );
@@ -112,14 +97,6 @@ export default function ProfilePage() {
       </Box>
     );
   }
-
-  // This function is no longer needed since we get progress from API
-  // const calculateProgress = () => {
-  //   if (!user.currentWeight || !user.goalWeight) return 0;
-  //   const totalToLose = user.currentWeight - user.goalWeight;
-  //   const currentLoss = Math.max(0, user.currentWeight - user.goalWeight);
-  //   return Math.min(100, Math.round((currentLoss / totalToLose) * 100));
-  // };
 
   return (
     <Box sx={{ p: 3, minHeight: "100vh", bgcolor: "background.default" }}>
@@ -158,14 +135,14 @@ export default function ProfilePage() {
                 </Avatar>
                 <Box>
                   <Typography variant="h3" fontWeight="bold" gutterBottom>
-                    {user.name || user.email.split('@')[0]}
+                    {user.name || user.email.split("@")[0]}
                   </Typography>
                   <Typography variant="h6" sx={{ opacity: 0.9 }}>
                     {user.email}
                   </Typography>
-                  <Typography variant="body2" sx={{ opacity: 0.8, mt: 1 }}>
+                  {/* <Typography variant="body2" sx={{ opacity: 0.8, mt: 1 }}>
                     Member since {user.memberSince}
-                  </Typography>
+                  </Typography> */}
                 </Box>
               </Box>
               <Button
@@ -202,11 +179,17 @@ export default function ProfilePage() {
 
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                   {[
-                    ["Age", user.age ? `${user.age} years` : 'Not set'],
-                    ["Height", user.height || 'Not set'],
-                    ["Current Weight", user.currentWeight ? `${user.currentWeight} lbs` : 'Not set'],
-                    ["Body Fat %", user.bodyFatPct ? `${user.bodyFatPct}%` : 'Not set'],
-                    ["Goal Weight", user.goalWeight ? `${user.goalWeight} lbs` : 'Not set'],
+                    ["Age", user.age ? `${user.age} years` : "Not set"],
+                    ["Height", user.height ? `${user.height} cm` : "Not set"],
+                    [
+                      "Current Weight",
+                      user.currWeight ? `${user.currWeight} KG` : "Not set",
+                    ],
+                    // ["Body Fat %", user.bodyFatPct ? `${user.bodyFatPct}%` : 'Not set'],
+                    [
+                      "Goal Weight",
+                      user.goalWeight ? `${user.goalWeight} KG` : "Not set",
+                    ],
                   ].map(([label, value]) => (
                     <Box
                       key={label}
@@ -227,7 +210,7 @@ export default function ProfilePage() {
                       Fitness Level:
                     </Typography>
                     <Chip
-                      label={user.fitnessLevel || 'Not set'}
+                      label={user.fitnessLevel || "Not set"}
                       color="primary"
                       variant="outlined"
                     />
@@ -261,17 +244,19 @@ export default function ProfilePage() {
                         alignItems: "center",
                       }}
                     >
-                      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                      >
                         <FitnessCenter />
                         <Typography>Total Workouts</Typography>
                       </Box>
-                      <Typography variant="h4" fontWeight="bold">
+                      {/* <Typography variant="h4" fontWeight="bold">
                         {user.totalWorkouts}
-                      </Typography>
+                      </Typography> */}
                     </Box>
                   </Paper>
 
-                  {user.currentWeight && user.goalWeight && (
+                  {user.currWeight && user.goalWeight && (
                     <Paper
                       sx={{
                         p: 2,
@@ -280,17 +265,20 @@ export default function ProfilePage() {
                       }}
                     >
                       <Box
-                        sx={{ display: "flex", justifyContent: "space-between" }}
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                        }}
                       >
                         <Typography>Weight to Lose</Typography>
                         <Typography variant="h4" fontWeight="bold">
-                          {Math.max(0, user.currentWeight - user.goalWeight)} lbs
+                          {Math.max(0, user.currWeight - user.goalWeight)} KG
                         </Typography>
                       </Box>
                     </Paper>
                   )}
 
-                  {user.bodyFatPct && (
+                  {/* {user.bodyFatPct && (
                     <Paper
                       sx={{
                         p: 2,
@@ -307,7 +295,7 @@ export default function ProfilePage() {
                         </Typography>
                       </Box>
                     </Paper>
-                  )}
+                  )} */}
 
                   <Paper
                     sx={{
@@ -323,13 +311,15 @@ export default function ProfilePage() {
                         alignItems: "center",
                       }}
                     >
-                      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                      >
                         <Timeline />
                         <Typography>Progress</Typography>
                       </Box>
-                      <Typography variant="h4" fontWeight="bold">
+                      {/* <Typography variant="h4" fontWeight="bold">
                         {user.progressPercentage}%
-                      </Typography>
+                      </Typography> */}
                     </Box>
                   </Paper>
                 </Box>
@@ -354,7 +344,7 @@ export default function ProfilePage() {
                   gap: 3,
                 }}
               >
-                {user.goalWeight && user.currentWeight && (
+                {user.goalWeight && user.currWeight && (
                   <Paper
                     sx={{
                       p: 3,
@@ -368,11 +358,11 @@ export default function ProfilePage() {
                       Weight Loss
                     </Typography>
                     <Typography variant="body2">
-                      Reach {user.goalWeight} lbs
+                      Reach {user.goalWeight} KG
                     </Typography>
                   </Paper>
                 )}
-                
+
                 <Paper
                   sx={{
                     p: 3,
@@ -389,7 +379,7 @@ export default function ProfilePage() {
                     Build muscle and strength
                   </Typography>
                 </Paper>
-                
+
                 <Paper
                   sx={{
                     p: 3,

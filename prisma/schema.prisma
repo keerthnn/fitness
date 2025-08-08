@@ -12,6 +12,12 @@ model User {
   id          String       @id @default(cuid())
   email       String       @unique
   password    String
+  name        String?
+  age         Int?         
+  height      Float? 
+  currWeight  Float?
+  goalWeight  Float?
+  fitnessLevel String?
   workouts    Workout[]
   bodyMetrics BodyMetric[]
   createdAt   DateTime     @default(now())

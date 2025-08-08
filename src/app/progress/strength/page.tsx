@@ -31,6 +31,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import Navbar from "fitness/app/components/layout/Navbar";
 import { useState, ReactNode } from "react";
 import {
   Bar,
@@ -174,8 +175,19 @@ const StrengthProgressPage = () => {
   );
 
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: "grey.100", p: 3 }}>
-      {/* Header */}
+    <Box sx={{ p: 3, maxWidth: 1200, mx: "auto" }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 4,
+          maxWidth: "1200px",
+          mx: "auto",
+        }}
+      >
+        <Navbar />
+      </Box>
       <Box
         display="flex"
         justifyContent="space-between"

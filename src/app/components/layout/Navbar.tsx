@@ -45,7 +45,7 @@ export default function Navbar() {
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [user, setUser] = useState<{ id: string; email: string } | null>(null);
+  const [user, setUser] = useState<{ id: string; name: string } | null>(null);
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -67,8 +67,9 @@ export default function Navbar() {
     try {
       const res = await fetch(`/api/users/${userId}`);
       if (!res.ok) throw new Error("Failed to fetch user");
-
+      
       const userData = await res.json();
+      console.log({userData})
       setUser(userData); // sets email and id
     } catch (err) {
       console.error("Error loading user:", err);
@@ -291,7 +292,7 @@ export default function Navbar() {
             Signed in as
           </Typography>
           <Typography variant="body2" fontWeight="bold">
-            {user?.email || "Loading"}
+            {user?.name || "Loading"}
           </Typography>
         </Box>
 
